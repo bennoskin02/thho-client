@@ -1,8 +1,16 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-20T01:42:27.257Z",
+  "updated": "2026-10-20T01:43:51.961Z",
   "creators": [],
   "payLink": "",
   "price": "1$",
-  "news": ""
+  "news": "",
+  "latest": {
+    "version": "1.6.1",
+    "tag": "v1.6.1",
+    "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.6.1/THHO-Client-Setup-1.6.1.exe",
+    "size": 94111718,
+    "notes": "Bugfixes bei der Kindersicherrung und neue Emotes und generell neue sachen",
+    "date": "2026-10-20T01:43:51.390Z"
+  }
 }
