@@ -1,9 +1,16 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-20T13:12:52.807Z",
+  "updated": "2026-10-20T13:14:08.856Z",
   "creators": [],
   "payLink": "",
   "price": "1$",
   "news": "",
-  "latest": null
+  "latest": {
+    "version": "1.8.0",
+    "tag": "v1.8.0",
+    "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.8.0/THHO-Client-Setup-1.8.0.exe",
+    "size": 94175433,
+    "notes": "",
+    "date": "2026-10-20T13:14:08.294Z"
+  }
 }
