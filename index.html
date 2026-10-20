@@ -176,12 +176,20 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
 </main>
 <footer><div class="wrap"><span>© THHO Client</span><span>Nicht offiziell von Mojang oder Microsoft.</span></div></footer>
 <script>
-fetch('thho-config.json?t=' + Date.now()).then(r => r.json()).then(c => {
-  if (!c.latest || !c.latest.url) return;
-  document.querySelectorAll('.dl').forEach(a => { a.href = c.latest.url; });
-  document.querySelectorAll('.dlText').forEach(s => { s.textContent = 'THHO Client ' + c.latest.version + ' herunterladen'; });
-  document.getElementById('verPill').textContent = 'Version ' + c.latest.version + ' · Minecraft 1.21.11';
-  if (c.latest.size) document.getElementById('size').lastChild.textContent = (c.latest.size / 1048576).toFixed(0) + ' MB';
+function show(v, url, size) {
+  if (!v || !url) return false;
+  document.querySelectorAll('.dl').forEach(a => { a.href = url; });
+  document.querySelectorAll('.dlText').forEach(s => { s.textContent = 'THHO Client ' + v + ' herunterladen'; });
+  document.getElementById('verPill').textContent = 'Version ' + v + ' · Minecraft 1.21.11';
+  if (size) document.getElementById('size').lastChild.textContent = (size / 1048576).toFixed(0) + ' MB';
+  return true;
+}
+// Neueste Version: erst thho-config.json, sonst direkt das neueste GitHub-Release (mit Setup-Datei)
+fetch('thho-config.json?t=' + Date.now()).then(r => r.json()).then(c => c.latest && show(c.latest.version, c.latest.url, c.latest.size)).catch(() => false).then(ok => {
+  if (ok) return;
+  return fetch('https://api.github.com/repos/bennoskin02/thho-client/releases').then(r => r.json()).then(list => {
+    for (const r of list || []) { const a = (r.assets || []).find(x => /.exe$/i.test(x.name) && x.size > 1000000); if (a) return show(String(r.tag_name).replace(/^v/, ''), a.browser_download_url, a.size); }
+  });
 }).catch(() => {});
 </script>
 </body>
