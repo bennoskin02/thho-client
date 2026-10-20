@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THHO Client – Download</title>
+<meta name="description" content="THHO Client: Minecraft-Launcher mit echten Konten, FPS-Boost, Mods, Emotes und mehr.">
+<style>
+:root { --a: #ec4899; --bg: #070b16; --text: #e8eefc; --muted: #8d9bbb; --line: rgba(148,170,220,.14); }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; line-height: 1.5; overflow-x: hidden; }
+.glow { position: fixed; width: 720px; height: 720px; border-radius: 50%; filter: blur(110px); opacity: .45; z-index: -1; }
+.g1 { left: -220px; top: -260px; background: radial-gradient(circle, var(--a), transparent 70%); }
+.g2 { right: -260px; bottom: -300px; background: radial-gradient(circle, color-mix(in srgb, var(--a) 40%, #a855f7), transparent 70%); }
+header { display: flex; align-items: center; gap: 12px; max-width: 1080px; margin: 0 auto; padding: 22px 20px; font-weight: 800; letter-spacing: .12em; }
+header svg { width: 30px; height: 30px; color: var(--a); }
+main { max-width: 1080px; margin: 0 auto; padding: 0 20px 80px; }
+.hero { padding: 70px 0 40px; }
+.eyebrow { color: color-mix(in oklab, var(--a) 65%, white); letter-spacing: .3em; font-size: 12px; text-transform: uppercase; }
+h1 { font-size: clamp(48px, 9vw, 96px); line-height: .95; margin: 14px 0 0; font-weight: 900; }
+h1 span { color: transparent; -webkit-text-stroke: 2px color-mix(in oklab, var(--a) 65%, white); }
+.lead { color: var(--muted); font-size: 18px; max-width: 560px; margin: 22px 0 0; }
+.dl { display: inline-flex; align-items: center; gap: 12px; margin-top: 34px; padding: 18px 30px; border-radius: 16px; font-size: 18px; font-weight: 800; color: #fff; text-decoration: none;
+  background: linear-gradient(135deg, var(--a), color-mix(in oklab, var(--a) 55%, black)); box-shadow: 0 14px 50px color-mix(in srgb, var(--a) 45%, transparent); transition: transform .15s; }
+.dl:hover { transform: translateY(-2px); }
+.dl svg { width: 22px; height: 22px; }
+.meta { color: var(--muted); font-size: 14px; margin-top: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-top: 50px; }
+.card { padding: 20px; border-radius: 16px; background: rgba(16,24,44,.6); border: 1px solid var(--line); }
+.card b { display: block; font-size: 16px; margin-bottom: 6px; }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+.card i { font-style: normal; font-size: 24px; display: block; margin-bottom: 8px; }
+.steps { margin-top: 50px; padding: 22px; border-radius: 16px; border: 1px solid var(--line); background: rgba(16,24,44,.45); }
+.steps ol { margin: 8px 0 0; padding-left: 20px; color: var(--muted); }
+footer { text-align: center; color: var(--muted); font-size: 13px; padding: 30px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div>
+<header><svg viewBox="0 0 32 32"><path d="M16 2 29 9.5v13L16 30 3 22.5v-13z" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 11h12M16 11v11" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>THHO CLIENT</header>
+<main>
+  <section class="hero">
+    <div class="eyebrow">Minecraft · Fabric · 1.21.11</div>
+    <h1>THHO <span>CLIENT</span></h1>
+    <p class="lead">Der Minecraft-Launcher mit echtem Microsoft-Konto, FPS-Boost, Mods mit einem Klick, Emotes, Capes, Shop und automatischen Updates.</p>
+    <a class="dl" id="dl" href="https://github.com/bennoskin02/thho-client/releases/latest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg><span id="dlText">Für Windows herunterladen</span></a>
+    <div class="meta" id="meta">Windows 10/11 · kostenlos</div>
+  </section>
+  <section class="grid">
+    <div class="card"><i>⚡</i><b>Maximale FPS</b><p>Eigener FPS-Boost plus Sodium &amp; Co. – automatisch eingerichtet.</p></div>
+    <div class="card"><i>🧩</i><b>Mods mit einem Klick</b><p>Mods, Shader und Texturepacks direkt von Modrinth – mit Vorschau.</p></div>
+    <div class="card"><i>💃</i><b>Emotes</b><p>Über 20 Tänze und Gesten, eigenes Emote-Rad und Hotkeys.</p></div>
+    <div class="card"><i>⚔</i><b>PvP-Features</b><p>Ziel-HUD, Hitboxen, Combo, Reach, Freelook, Zoom und mehr.</p></div>
+    <div class="card"><i>◆</i><b>Shop</b><p>Kristalle und Diamanten fürs Spielen – für Namensfarben, Capes und Emotes.</p></div>
+    <div class="card"><i>🔄</i><b>Auto-Updates</b><p>Neue Versionen erscheinen direkt im Launcher – ein Klick und fertig.</p></div>
+  </section>
+  <section class="steps"><b>So geht's</b>
+    <ol><li>Setup herunterladen und starten.</li><li>Mit deinem Microsoft-Konto anmelden (das, mit dem du Minecraft gekauft hast).</li><li>Auf „Spielen“ klicken.</li></ol>
+  </section>
+</main>
+<footer>THHO Client · Nicht offiziell von Mojang oder Microsoft</footer>
+<script>
+fetch('thho-config.json?t=' + Date.now()).then(r => r.json()).then(c => {
+  if (!c.latest || !c.latest.url) return;
+  document.getElementById('dl').href = c.latest.url;
+  document.getElementById('dlText').textContent = 'THHO Client ' + c.latest.version + ' herunterladen';
+  const mb = c.latest.size ? ' · ' + (c.latest.size / 1048576).toFixed(0) + ' MB' : '';
+  document.getElementById('meta').textContent = 'Windows 10/11 · kostenlos' + mb;
+}).catch(() => {});
+</script>
+</body>
+</html>
