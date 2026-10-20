@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-20T19:47:01.190Z",
+  "updated": "2026-10-20T21:26:26.836Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -33,7 +33,7 @@
     "k1200": "",
     "k3000": ""
   },
-  "net": "https://steep-lamprey-9744.bennoskin0287.deno.net",
+  "net": "https://thh-netzweiter.bennoskin02.workers.dev",
   "proHashes": [
     "61c6dc1f36538c8b0c652566ac03203c62ddce574fc9d409517e1291e4ae9361",
     "2c061de2e24bd8c6cbe4471bedcc3db4f5e25b41e6b2a6a620d56dbff3400a9d",
