@@ -3,7 +3,7 @@
 // Anmeldung über den echten Minecraft-Account (Mojang "hasJoined"-Prüfung) – niemand kann sich als jemand anderes ausgeben.
 
 const isDeno = typeof Deno !== 'undefined';
-const VERSION = 6;
+const VERSION = 7;
 const MAX_IDS = 120;
 const env = k => (isDeno ? Deno.env.get(k) : typeof process !== 'undefined' ? process.env[k] : '') || '';
 const MOJANG = env('THHO_MOJANG') || 'https://sessionserver.mojang.com'; // Override nur für Tests
@@ -139,14 +139,33 @@ async function handle(req) {
   const store = await db();
 
   if (p === '/') return json({ ok: true, name: 'THHO-Netz', version: VERSION, storage: store.kind });
+  // Diagnose: erreicht der Server die Mojang-/Microsoft-Dienste?
+  if (p === '/diag') {
+    const st = async u => { try { const r = await fetch(u, { headers: { 'User-Agent': 'THHO-Netz' } }); return r.status; } catch (e) { return String(e).slice(0, 80); } };
+    return json({ version: VERSION, storage: store.kind, hasJoined: await st(`${MOJANG}/session/minecraft/hasJoined?username=Notch&serverId=deadbeef`), services: await st('https://api.minecraftservices.com/minecraft/profile') });
+  }
 
   // Anmeldung: Der Launcher meldet sich vorher bei Mojang mit serverId an ("join"), wir prüfen das hier.
   if (p === '/auth' && req.method === 'POST') {
-    const { name, serverId } = await body(req);
+    const { name, serverId, mcToken } = await body(req);
     if (!/^[A-Za-z0-9_]{1,16}$/.test(name || '') || !/^[0-9a-f]{8,40}$/.test(serverId || '')) return fail('Ungültige Anmeldung');
-    const r = await fetch(`${MOJANG}/session/minecraft/hasJoined?username=${encodeURIComponent(name)}&serverId=${serverId}`);
-    if (r.status !== 200) return fail('Minecraft-Konto konnte nicht bestätigt werden', 401);
-    const prof = await r.json();
+    let prof = null, why = '';
+    // 1) Konto über den Minecraft-Dienst von Microsoft bestätigen (Token wird nur geprüft, nicht gespeichert)
+    if (typeof mcToken === 'string' && mcToken.length > 20 && mcToken.length < 4000) {
+      try {
+        const r = await fetch('https://api.minecraftservices.com/minecraft/profile', { headers: { Authorization: 'Bearer ' + mcToken, 'User-Agent': 'THHO-Netz' } });
+        if (r.status === 200) prof = await r.json(); else why = 'services ' + r.status;
+      } catch (e) { why = 'services ' + String(e).slice(0, 60); }
+    }
+    // 2) sonst klassisch über Mojang (Launcher hat sich vorher mit serverId angemeldet)
+    if (!prof) {
+      try {
+        const r = await fetch(`${MOJANG}/session/minecraft/hasJoined?username=${encodeURIComponent(name)}&serverId=${serverId}`, { headers: { 'User-Agent': 'THHO-Netz' } });
+        if (r.status === 200) prof = await r.json(); else why += ' / mojang ' + r.status;
+      } catch (e) { why += ' / mojang ' + String(e).slice(0, 60); }
+    }
+    if (prof && prof.name && prof.name.toLowerCase() !== String(name).toLowerCase()) { prof = null; why += ' / name'; }
+    if (!prof) return json({ error: 'Minecraft-Konto konnte nicht bestätigt werden', why }, 401);
     if (!uuidOk(prof.id)) return fail('Minecraft-Konto konnte nicht bestätigt werden', 401);
     const token = randomToken();
     await store.set(['tok', token], { uuid: prof.id, name: prof.name }, 1000 * 60 * 60 * 24 * 30);
