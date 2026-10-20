@@ -1,7 +1,12 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-20T13:52:27.871Z",
-  "creators": [],
+  "updated": "2026-10-20T13:53:03.377Z",
+  "creators": [
+    {
+      "code": "Ben",
+      "name": "Ben"
+    }
+  ],
   "payLink": "",
   "price": "1$",
   "news": "",
@@ -15,5 +20,10 @@
   },
   "crystalCodes": {
     "164df1cef245a17c7ef9db8fb7c97f4f61c376c2efd49e709b7f24f86537c2f0": 3000
+  },
+  "packPrices": {
+    "k500": "",
+    "k1200": "",
+    "k3000": ""
   }
 }
