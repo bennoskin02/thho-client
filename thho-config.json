@@ -1,16 +1,9 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-20T12:16:36.015Z",
+  "updated": "2026-10-20T13:12:52.807Z",
   "creators": [],
   "payLink": "",
   "price": "1$",
   "news": "",
-  "latest": {
-    "version": "1.7.0",
-    "tag": "v1.7.0",
-    "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.7.0/THHO-Client-Setup-1.7.0.exe",
-    "size": 94158433,
-    "notes": "Besserer Shop!!!",
-    "date": "2026-10-20T12:16:35.405Z"
-  }
+  "latest": null
 }
