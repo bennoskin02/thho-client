@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-20T16:25:26.161Z",
+  "updated": "2026-10-20T16:45:14.813Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -31,5 +31,6 @@
     "k500": "",
     "k1200": "",
     "k3000": ""
-  }
+  },
+  "net": "https://steep-lamprey-9744.bennoskin0287.deno.net"
 }
