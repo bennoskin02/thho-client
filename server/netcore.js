@@ -3,7 +3,7 @@
 // Anmeldung über den echten Minecraft-Account (Mojang "hasJoined"-Prüfung) – niemand kann sich als jemand anderes ausgeben.
 
 const isDeno = typeof Deno !== 'undefined';
-const VERSION = 7;
+const VERSION = 8;
 const MAX_IDS = 120;
 const env = k => (isDeno ? Deno.env.get(k) : typeof process !== 'undefined' ? process.env[k] : '') || '';
 const MOJANG = env('THHO_MOJANG') || 'https://sessionserver.mojang.com'; // Override nur für Tests
@@ -131,6 +131,52 @@ function profilePage(v) {
 <footer>THHO Client · Profil</footer></div></body></html>`;
 }
 
+// Öffentliche Schlüssel von Mojang (https://api.minecraftservices.com/publickeys) – damit prüft der Server ohne Mojang-Anfrage
+const MOJANG_CERT_KEYS = [
+  'MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAylB4B6m5lz7jwrcFz6Fd/fnfUhcvlxsTSn5kIK/2aGG1C3kMy4VjhwlxF6BFUSnfxhNswPjh3ZitkBxEAFY25uzkJFRwHwVA9mdwjashXILtR6OqdLXXFVyUPIURLOSWqGNBtb08EN5fMnG8iFLgEJIBMxs9BvF3s3/FhuHyPKiVTZmXY0WY4ZyYqvoKR+XjaTRPPvBsDa4WI2u1zxXMeHlodT3lnCzVvyOYBLXL6CJgByuOxccJ8hnXfF9yY4F0aeL080Jz/3+EBNG8RO4ByhtBf4Ny8NQ6stWsjfeUIvH7bU/4zCYcYOq4WrInXHqS8qruDmIl7P5XXGcabuzQstPf/h2CRAUpP/PlHXcMlvewjmGU6MfDK+lifScNYwjPxRo4nKTGFZf/0aqHCh/EAsQyLKrOIYRE0lDG3bzBh8ogIMLAugsAfBb6M3mqCqKaTMAf/VAjh5FFJnjS+7bE+bZEV0qwax1CEoPPJL1fIQjOS8zj086gjpGRCtSy9+bTPTfTR/SJ+VUB5G2IeCItkNHpJX2ygojFZ9n5Fnj7R9ZnOM+L8nyIjPu3aePvtcrXlyLhH/hvOfIOjPxOlqW+O5QwSFP4OEcyLAUgDdUgyW36Z5mB285uKW/ighzZsOTevVUG2QwDItObIV6i8RCxFbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==',
+  'MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAt4t9NPuu7cktclnaH7eZj0omkLcJHeLz5MKsyJEntHZ0INtuBjSSul3Pp3pBeJN8k3ADdcdBLUN90bcAi7WsQqTx3Ft363q3W7TbM8j2iTEdp/0uVspoRt/DP1tkaWFs/w2WwUv9jbVoBUzfUc4pSTIxRwdjmqjZQfvjwKNDbOx3IhP2H0WXodbISejPi1wBZqNW4m1rnZAXp/EpUguxA8mobCa4vUCBkyFDyXdl69/wUSJHyCPmgcMJ364OlAhIqtwVPShBZObvrK/f0BYk6ShJD3N7TFDatSYsIIdcTKRknaIm91s+EsMrdB9U4Yw+ZJ/pyCB4S3vk8zfDCnb0DWIxYH3/EMzaxl77djmTmMzi/JDITup5z3jfWtRZmrAhU2/+W5IO5hEpo3/bCS9PXIY5xb41Lmp2ZO8dXKtyD66Chchy0W129n8vPl2GIruOdrxsjZAHnneyAb9jm0uaGaphwnEnuecX/qgHY6ZMtayvLLsPst8PO6R1vufMy8WqjK+j7LnC1krL7CPDg0NEhyQTmw5l+NCNjSlvB1juM9V4PARg0bYCOkGXm7ydRCjSSH8CJXZpwnd5cBB5WKAX3KPzutRgMi/LFwNSMZzFuUyXaYOZPpD259yqph1LmGqegEdDriACVU+dVEONFMm8eIuBofe7ljmsAFKW9BINwK0CAwEAAQ==',
+];
+const MOJANG_PROFILE_KEYS = [
+  'MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAylB4B6m5lz7jwrcFz6Fd/fnfUhcvlxsTSn5kIK/2aGG1C3kMy4VjhwlxF6BFUSnfxhNswPjh3ZitkBxEAFY25uzkJFRwHwVA9mdwjashXILtR6OqdLXXFVyUPIURLOSWqGNBtb08EN5fMnG8iFLgEJIBMxs9BvF3s3/FhuHyPKiVTZmXY0WY4ZyYqvoKR+XjaTRPPvBsDa4WI2u1zxXMeHlodT3lnCzVvyOYBLXL6CJgByuOxccJ8hnXfF9yY4F0aeL080Jz/3+EBNG8RO4ByhtBf4Ny8NQ6stWsjfeUIvH7bU/4zCYcYOq4WrInXHqS8qruDmIl7P5XXGcabuzQstPf/h2CRAUpP/PlHXcMlvewjmGU6MfDK+lifScNYwjPxRo4nKTGFZf/0aqHCh/EAsQyLKrOIYRE0lDG3bzBh8ogIMLAugsAfBb6M3mqCqKaTMAf/VAjh5FFJnjS+7bE+bZEV0qwax1CEoPPJL1fIQjOS8zj086gjpGRCtSy9+bTPTfTR/SJ+VUB5G2IeCItkNHpJX2ygojFZ9n5Fnj7R9ZnOM+L8nyIjPu3aePvtcrXlyLhH/hvOfIOjPxOlqW+O5QwSFP4OEcyLAUgDdUgyW36Z5mB285uKW/ighzZsOTevVUG2QwDItObIV6i8RCxFbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==',
+  'MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAra4Y2wu3rWEW7cDTDRRd4IvUD140Y12SaG3k4V3UwT/pDnnX5itOcYiZA0qf4VCpJDp2PifOL+Pr/ph/G9/6ZoIxkBeGENo+S7i9BqizJy9cmZocpyx+RkZaw9+frCGNLuYLrxziNWiXFACJSg2mHACR7+6NkGN8d/16/3PxMnvGSyLT7JKGUgqj1Q3oW7k+NLXR9sw6oRELOcnUvZVa2bcglv8vlcyPqqnBhydLfHI85Z5WnIYZviZ3Bb4dv5Fme726BGOtEY7kz40RfiwjT3xYKYKPJUS3/crPX6eugmWyrWdddKaePrW88bp17Z5NIStlJ5KJJk4coha8O+P7onDqmbHwLqPTeR51njkgZ+DJWT6fz8ku9OWQn6I/FxqN14iYIghDJijmKvEwsI7FJ5X2ttPXEvBYLmpj2j0lQQcUIqH7hkiZ+mCW0GYawJgbAeNAraM9sP+76MyAGITtAsXv1IQmah+7OeDJOToG2Kb1Dl0Va+HiP9MPpcnO7kbn6dqAyhNvRNmHnsUOiEcLhW9Rk7xz87IBV/cGKbUDgxu8cYY0P512DWt5+Jmr8W10FDFdLmkJt1taWxNxApM2CiFPCimk02koyLZDW9nqpWNw6qS/TOYPdz438qEuamtYUJ+u6WhBjK8xAJEAt5k3gDKX+nlTiG3N6se09D62fS8CAwEAAQ==',
+];
+const TEST_KEYS = env('THHO_TEST_KEYS') ? JSON.parse(env('THHO_TEST_KEYS')) : null; // nur für lokale Tests
+const b64bytes = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function rsaVerify(keyB64, hash, sigB64, data) {
+  try {
+    const key = await crypto.subtle.importKey('spki', b64bytes(keyB64), { name: 'RSASSA-PKCS1-v1_5', hash }, false, ['verify']);
+    return await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64bytes(sigB64), data);
+  } catch { return false; }
+}
+const anyKey = async (keys, hash, sig, data) => { for (const k of keys) if (await rsaVerify(k, hash, sig, data)) return true; return false; };
+/**
+ * Anmeldung ohne Anfrage bei Mojang (Mojang/Microsoft blockieren manche Server-Anbieter):
+ * 1) Spieler-Zertifikat von Mojang (Schlüsselpaar des Spielers, von Mojang signiert) beweist die UUID,
+ * 2) der Launcher signiert mit dem privaten Spieler-Schlüssel eine Nachricht mit Zeitstempel,
+ * 3) die von Mojang signierten Profil-Daten (textures) beweisen den Namen.
+ */
+async function verifyCertAuth(b) {
+  const uuid = String(b.uuid || '').replace(/-/g, '').toLowerCase();
+  if (!uuidOk(uuid)) return { why: 'uuid' };
+  const c = b.cert || {}, exp = Number(c.expiresAt);
+  if (!(exp > Date.now()) || typeof c.publicKey !== 'string' || typeof c.signatureV2 !== 'string') return { why: 'cert' };
+  const pub = b64bytes(c.publicKey);
+  const data = new Uint8Array(24 + pub.length), dv = new DataView(data.buffer);
+  for (let i = 0; i < 16; i++) data[i] = parseInt(uuid.slice(i * 2, i * 2 + 2), 16);
+  dv.setBigInt64(16, BigInt(exp));
+  data.set(pub, 24);
+  if (!await anyKey(TEST_KEYS?.cert || MOJANG_CERT_KEYS, 'SHA-1', c.signatureV2, data)) return { why: 'cert-sig' };
+  const ts = Number(b.ts);
+  if (!(Math.abs(Date.now() - ts) < 5 * 60_000)) return { why: 'zeit' };
+  if (!await rsaVerify(c.publicKey, 'SHA-256', String(b.sig || ''), new TextEncoder().encode(`thho:${uuid}:${ts}`))) return { why: 'sig' };
+  const t = b.textures || {};
+  if (typeof t.value !== 'string' || typeof t.signature !== 'string') return { why: 'textures' };
+  if (!await anyKey(TEST_KEYS?.profile || MOJANG_PROFILE_KEYS, 'SHA-1', t.signature, new TextEncoder().encode(t.value))) return { why: 'textures-sig' };
+  let tx; try { tx = JSON.parse(new TextDecoder().decode(b64bytes(t.value))); } catch { return { why: 'textures-json' }; }
+  if (String(tx.profileId || '').toLowerCase() !== uuid || !/^[A-Za-z0-9_]{1,16}$/.test(tx.profileName || '')) return { why: 'textures-profil' };
+  return { prof: { id: uuid, name: tx.profileName } };
+}
+
 // ---------------- Routen ----------------
 async function handle(req) {
   const url = new URL(req.url);
@@ -147,11 +193,13 @@ async function handle(req) {
 
   // Anmeldung: Der Launcher meldet sich vorher bei Mojang mit serverId an ("join"), wir prüfen das hier.
   if (p === '/auth' && req.method === 'POST') {
-    const { name, serverId, mcToken } = await body(req);
-    if (!/^[A-Za-z0-9_]{1,16}$/.test(name || '') || !/^[0-9a-f]{8,40}$/.test(serverId || '')) return fail('Ungültige Anmeldung');
+    const b0 = await body(req);
+    const { name, serverId, mcToken } = b0;
     let prof = null, why = '';
+    if (b0.cert) { const v = await verifyCertAuth(b0); prof = v.prof || null; if (!prof) why = 'zertifikat ' + v.why; }
+    if (!prof && (!/^[A-Za-z0-9_]{1,16}$/.test(name || '') || !/^[0-9a-f]{8,40}$/.test(serverId || ''))) return json({ error: 'Minecraft-Konto konnte nicht bestätigt werden', why }, 401);
     // 1) Konto über den Minecraft-Dienst von Microsoft bestätigen (Token wird nur geprüft, nicht gespeichert)
-    if (typeof mcToken === 'string' && mcToken.length > 20 && mcToken.length < 4000) {
+    if (!prof && typeof mcToken === 'string' && mcToken.length > 20 && mcToken.length < 4000) {
       try {
         const r = await fetch('https://api.minecraftservices.com/minecraft/profile', { headers: { Authorization: 'Bearer ' + mcToken, 'User-Agent': 'THHO-Netz' } });
         if (r.status === 200) prof = await r.json(); else why = 'services ' + r.status;
@@ -164,7 +212,7 @@ async function handle(req) {
         if (r.status === 200) prof = await r.json(); else why += ' / mojang ' + r.status;
       } catch (e) { why += ' / mojang ' + String(e).slice(0, 60); }
     }
-    if (prof && prof.name && prof.name.toLowerCase() !== String(name).toLowerCase()) { prof = null; why += ' / name'; }
+    if (prof && !b0.cert && prof.name && prof.name.toLowerCase() !== String(name).toLowerCase()) { prof = null; why += ' / name'; }
     if (!prof) return json({ error: 'Minecraft-Konto konnte nicht bestätigt werden', why }, 401);
     if (!uuidOk(prof.id)) return fail('Minecraft-Konto konnte nicht bestätigt werden', 401);
     const token = randomToken();
