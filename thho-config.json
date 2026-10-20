@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-20T14:29:17.485Z",
+  "updated": "2026-10-20T14:30:58.801Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -10,7 +10,14 @@
   "payLink": "",
   "price": "1$",
   "news": "",
-  "latest": null,
+  "latest": {
+    "version": "1.9.0",
+    "tag": "v1.9.0",
+    "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.9.0/THHO-Client-Setup-1.9.0.exe",
+    "size": 94182810,
+    "notes": "Neue themes!",
+    "date": "2026-10-20T14:30:58.228Z"
+  },
   "crystalCodes": {
     "164df1cef245a17c7ef9db8fb7c97f4f61c376c2efd49e709b7f24f86537c2f0": 3000,
     "025edf046ef4c224490a7f94a5cb1d769a6d4d627585df23396f3d862bc37215": 3000,
