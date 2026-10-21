@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-21T17:30:15.526Z",
+  "updated": "2026-10-21T17:31:23.432Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -8,7 +8,7 @@
     }
   ],
   "payLink": "",
-  "price": "1$",
+  "price": "5",
   "news": "",
   "latest": {
     "version": "1.11.11",
@@ -46,7 +46,8 @@
   "packPrices": {
     "k500": "",
     "k1200": "",
-    "k3000": ""
+    "k3000": "",
+    "k10000": ""
   },
   "net": "https://thh-netzweiter.bennoskin02.workers.dev",
   "proHashes": [
