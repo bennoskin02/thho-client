@@ -3,7 +3,7 @@
 // Anmeldung über den echten Minecraft-Account (Mojang "hasJoined"-Prüfung) – niemand kann sich als jemand anderes ausgeben.
 
 const isDeno = typeof Deno !== 'undefined';
-const VERSION = 9;
+const VERSION = 11;
 const MAX_IDS = 120;
 const env = k => (isDeno ? Deno.env.get(k) : typeof process !== 'undefined' ? process.env[k] : '') || '';
 const MOJANG = env('THHO_MOJANG') || 'https://sessionserver.mojang.com'; // Override nur für Tests
@@ -98,7 +98,7 @@ function cleanProfile(p) {
   if (HEX.test(p.accent || '')) out.accent = p.accent;
   return out;
 }
-const isOnline = v => v.seen && Date.now() - v.seen < 150_000;
+const isOnline = v => v.seen && Date.now() - v.seen < 150_000 && v.status !== 'invisible';
 /** Öffentliche Sicht auf einen Spieler (respektiert seine Privatsphäre-Einstellungen). */
 function publicView(v) {
   const pv = priv(v), on = isOnline(v);
@@ -123,11 +123,11 @@ const BANNER_CSS = { aurora: 'linear-gradient(120deg,#34d399,#22d3ee,#a78bfa)', 
 function profilePage(v) {
   const a = v.profile.accent || '#3b82f6';
   const bn = v.profile.banner ? (v.profile.banner.preset ? BANNER_CSS[v.profile.banner.preset] : `linear-gradient(120deg,${v.profile.banner.c1},${v.profile.banner.c2})`) : `linear-gradient(120deg,${a},#0b1020)`;
-  const st = v.online ? (v.status === 'ingame' ? 'Spielt gerade' + (v.server ? ' auf ' + esc(v.server) : '') : 'Im THHO Client') : 'Offline';
+  const st = v.online ? (v.status === 'ingame' ? 'Spielt gerade' + (v.server ? ' auf ' + esc(v.server) : '') : v.status === 'away' ? 'Abwesend' : v.status === 'dnd' ? 'Bitte nicht stören' : 'Im THHO Client') : 'Offline';
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(v.name)} – THHO Client</title>
-<style>body{margin:0;background:#070b16;color:#e8eefc;font-family:Inter,"Segoe UI",system-ui,sans-serif}.wrap{max-width:760px;margin:40px auto;padding:0 16px}.card{border-radius:20px;overflow:hidden;background:#0c111d;border:1px solid rgba(148,170,220,.14)}.banner{height:170px;background:${bn};background-size:cover}.head{display:flex;gap:18px;align-items:flex-end;padding:0 24px;margin-top:-48px}.head img{width:96px;height:96px;border-radius:16px;border:4px solid #0c111d;image-rendering:pixelated;background:#111}.head h1{margin:0 0 6px;font-size:30px}.pro{display:inline-block;margin-left:8px;padding:3px 8px;border-radius:7px;font-size:12px;font-weight:800;background:linear-gradient(90deg,#f59e0b,#ec4899);vertical-align:middle}.body{padding:18px 24px 26px}.st{color:#8d9bbb}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:${v.online ? (v.status === 'ingame' ? a : '#22c55e') : '#64748b'}}.bio{margin:14px 0 0;white-space:pre-wrap}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.stats div{padding:14px;border-radius:12px;background:rgba(255,255,255,.04)}.stats b{display:block;font-size:20px}.stats small{color:#8d9bbb}footer{text-align:center;color:#8d9bbb;font-size:13px;margin:22px 0}</style></head>
+<style>body{margin:0;background:#070b16;color:#e8eefc;font-family:Inter,"Segoe UI",system-ui,sans-serif}.wrap{max-width:760px;margin:40px auto;padding:0 16px}.card{border-radius:20px;overflow:hidden;background:#0c111d;border:1px solid rgba(148,170,220,.14)}.banner{height:170px;background:${bn};background-size:cover}.head{display:flex;gap:18px;align-items:flex-end;padding:0 24px;margin-top:-48px}.head img{width:96px;height:96px;border-radius:16px;border:4px solid #0c111d;image-rendering:pixelated;background:#111}.head h1{margin:0 0 6px;font-size:30px}.pro{display:inline-block;margin-left:8px;padding:3px 8px;border-radius:7px;font-size:12px;font-weight:800;background:linear-gradient(90deg,#f59e0b,#ec4899);vertical-align:middle}.body{padding:18px 24px 26px}.st{color:#8d9bbb}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:${v.online ? (v.status === 'ingame' ? a : v.status === 'away' ? '#f59e0b' : v.status === 'dnd' ? '#ef4444' : '#22c55e') : '#64748b'}}.bio{margin:14px 0 0;white-space:pre-wrap}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.stats div{padding:14px;border-radius:12px;background:rgba(255,255,255,.04)}.stats b{display:block;font-size:20px}.stats small{color:#8d9bbb}img.skin{float:right;height:150px;margin:-30px 0 8px 18px;image-rendering:pixelated;filter:drop-shadow(0 8px 14px rgba(0,0,0,.5))}footer{text-align:center;color:#8d9bbb;font-size:13px;margin:22px 0}</style></head>
 <body><div class="wrap"><div class="card"><div class="banner"></div><div class="head"><img src="https://mc-heads.net/avatar/${esc(v.uuid)}/96" alt=""><div><h1>${esc(v.name)}${v.pro ? '<span class="pro">★ PRO</span>' : ''}</h1><div class="st"><span class="dot"></span>${st}</div></div></div>
-<div class="body">${v.profile.bio ? `<p class="bio">${esc(v.profile.bio)}</p>` : ''}${v.stats ? `<div class="stats"><div><b>${fmtH(v.stats.today)}</b><small>Heute</small></div><div><b>${fmtH(v.stats.week)}</b><small>Diese Woche</small></div><div><b>${fmtH(v.stats.total)}</b><small>Gesamt</small></div></div>` : ''}</div></div>
+<div class="body"><img class="skin" src="https://mc-heads.net/body/${esc(v.uuid)}/150" alt="Skin">${v.profile.bio ? `<p class="bio">${esc(v.profile.bio)}</p>` : ''}${v.stats ? `<div class="stats"><div><b>${fmtH(v.stats.today)}</b><small>Heute</small></div><div><b>${fmtH(v.stats.week)}</b><small>Diese Woche</small></div><div><b>${fmtH(v.stats.total)}</b><small>Gesamt</small></div></div>` : ''}</div></div>
 <footer>THHO Client · Profil</footer></div></body></html>`;
 }
 
@@ -229,7 +229,7 @@ async function handle(req) {
     const cur = (await store.get(['p', me.uuid])) || { cape: null, emote: null, emoteAt: 0 };
     if ('cape' in b) { if (!idOk(b.cape)) return fail('Ungültiges Cape'); cur.cape = b.cape; }
     if ('emote' in b) { if (!idOk(b.emote)) return fail('Ungültiges Emote'); cur.emote = b.emote; cur.emoteAt = b.emote ? Date.now() : 0; }
-    if ('status' in b) cur.status = ['online', 'ingame', 'away'].includes(b.status) ? b.status : 'online';
+    if ('status' in b) cur.status = ['online', 'ingame', 'away', 'dnd', 'invisible'].includes(b.status) ? b.status : 'online';
     if ('server' in b) cur.server = typeof b.server === 'string' && /^[\w.:-]{1,80}$/.test(b.server) ? b.server : null;
     if (b.stats && typeof b.stats === 'object') cur.stats = { total: Math.max(0, Math.min(1e12, Number(b.stats.total) || 0)), week: Math.max(0, Math.min(1e10, Number(b.stats.week) || 0)), today: Math.max(0, Math.min(1e9, Number(b.stats.today) || 0)) };
     if (b.privacy && typeof b.privacy === 'object') cur.privacy = { showServer: b.privacy.showServer !== false, showPlaytime: b.privacy.showPlaytime !== false, allowJoin: b.privacy.allowJoin !== false, public: b.privacy.public !== false, live: b.privacy.live !== false };
@@ -238,7 +238,8 @@ async function handle(req) {
     if ('version' in b) cur.mc = typeof b.version === 'string' ? b.version.slice(0, 24) : null;
     if (b.look && typeof b.look === 'object') {
       const cols = (Array.isArray(b.look.colors) ? b.look.colors : []).filter(c => HEX.test(c)).slice(0, 8);
-      cur.look = { colors: cols, anim: ['static', 'flow', 'wave', 'pulse', 'sparkle', 'breathe'].includes(b.look.anim) ? b.look.anim : 'static', logo: b.look.logo !== false, logoColor: HEX.test(b.look.logoColor || '') ? b.look.logoColor : null };
+      const cid = x => /^k_[a-z0-9_]{1,24}$/.test(x || '') ? x : null;
+      cur.look = { colors: cols, anim: ['static', 'flow', 'wave', 'pulse', 'sparkle', 'breathe'].includes(b.look.anim) ? b.look.anim : 'static', logo: b.look.logo !== false, logoColor: HEX.test(b.look.logoColor || '') ? b.look.logoColor : null, hat: cid(b.look.hat), wings: cid(b.look.wings) };
     }
     cur.uuid = me.uuid; cur.name = me.name; cur.seen = Date.now();
     await store.set(['p', me.uuid], cur, 1000 * 60 * 60 * 24 * 60);
@@ -465,7 +466,7 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
       const now = Date.now();
       const friends = ids.map((u, i) => {
         const v = vals[i] || {};
-        const online = v.seen && now - v.seen < 150_000;
+        const online = isOnline(v);
         const pv = priv(v);
         return { uuid: u, name: v.name || '?', pro: !!v.pro, online: !!online, status: online ? v.status || 'online' : 'offline', server: online && pv.showServer ? v.server || null : null, joinable: !!(online && pv.showServer && pv.allowJoin && v.server), seen: v.seen || 0, stats: pv.showPlaytime ? v.stats || null : null };
       });
@@ -481,7 +482,10 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
     if (p === '/friends/add' && req.method === 'POST') {
       const name = String(b.name || '').trim().toLowerCase();
       if (!/^[a-z0-9_]{1,16}$/.test(name)) return fail('Ungültiger Spielername');
-      const t = await store.get(['name', name]);
+      let t = await store.get(['name', name]);
+      // Fallback: der Client hat die UUID schon bei Mojang nachgeschlagen (z. B. nach Namensänderung)
+      const bu = String(b.uuid || '').replace(/-/g, '').toLowerCase();
+      if (!t && uuidOk(bu)) { const pv = await store.get(['p', bu]); if (pv) { t = { uuid: bu, name: pv.name || b.name }; await store.set(['name', name], t); } }
       if (!t) return fail('Diesen Spieler gibt es im THHO-Netz noch nicht – er muss den THHO Client einmal gestartet haben.', 404);
       if (t.uuid === me.uuid) return fail('Das bist du selbst 🙂');
       if ((await list(['fr', me.uuid])).includes(t.uuid)) return fail(t.name + ' ist schon dein Freund.');
