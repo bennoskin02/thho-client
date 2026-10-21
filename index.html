@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root { --a: #f472b6; --bg: #06080f; --panel: #0c111d; --text: #eef2fb; --muted: #8b97b3; --line: rgba(148,170,220,.12); }
+:root { --a: #22c55e; --bg: #06080f; --panel: #0c111d; --text: #eef2fb; --muted: #8b97b3; --line: rgba(148,170,220,.12); }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, "Segoe UI", system-ui, sans-serif; line-height: 1.55; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
@@ -40,6 +40,19 @@ nav .links a { text-decoration: none; } nav .links a:hover { color: var(--text);
 h1 { font-size: clamp(42px, 6vw, 68px); line-height: 1.02; letter-spacing: -.03em; margin: 18px 0 0; font-weight: 900; }
 h1 span { background: linear-gradient(90deg, var(--a), #a855f7); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .lead { color: var(--muted); font-size: 18px; max-width: 520px; margin: 20px 0 0; }
+.btn[hidden], .oslinks[hidden], .oslinks a[hidden] { display: none; }
+.btn.dlWin { padding: 14px 24px; font-size: 16px; animation: winGlow 2.6s ease-in-out infinite; }
+.btn.dlWin:hover { animation-play-state: paused; }
+@keyframes winGlow {
+  0%, 100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--a) 60%, transparent), 0 10px 36px color-mix(in srgb, var(--a) 45%, transparent); }
+  50% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--a) 90%, white), 0 0 26px color-mix(in srgb, var(--a) 85%, transparent), 0 14px 60px color-mix(in srgb, var(--a) 65%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .btn.dlWin { animation: none; } }
+.cta .os { display: inline-flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.oslinks { color: var(--muted); font-size: 12.5px; margin-top: 10px; }
+.oslinks a { color: var(--muted); }
+.linhint { color: var(--muted); font-size: 13px; margin-top: 10px; }
+.linhint code { background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: 12px; }
 .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
 .meta { color: var(--muted); font-size: 13px; margin-top: 14px; display: flex; gap: 16px; flex-wrap: wrap; }
 .meta span { display: inline-flex; align-items: center; gap: 6px; }
@@ -110,19 +123,23 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
 <nav><div class="wrap">
   <a class="brand" href="#"><svg viewBox="0 0 32 32"><g transform="translate(16 16) scale(.047) translate(-625 -620)" fill="currentColor"><path d="M366 481 483 399V835L391 769V487Z"/><path d="M886 478 758 389V865L860 796V484Z"/><path d="M564 371 643 306V465L564 510Z"/><path d="M564 646 643 691V870L564 938Z"/><path d="M503 497 738 634V672L503 598Z" opacity=".75"/></g></svg>THHO <b>CLIENT</b></a>
   <div class="links"><a href="#features">Features</a><a href="#pro">Pro</a><a href="#start">Installation</a><a href="#faq">FAQ</a></div>
-  <a class="btn primary small dl" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.6/THHO-Client-Setup-1.11.6.exe"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Download</a>
+  <a class="btn primary small dl" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.11/THHO-Client-Setup-1.11.11.exe"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Download</a>
 </div></nav>
 <main class="wrap">
   <section class="hero">
     <div>
-      <span class="pill"><i></i><span id="verPill">Version 1.11.6 · Minecraft 1.21.11</span></span>
+      <span class="pill"><i></i><span id="verPill">Version 1.11.11 · Minecraft 1.21.11</span></span>
       <h1>Minecraft.<br><span>Schneller. Schöner.</span></h1>
       <p class="lead">Der Launcher mit echtem Microsoft-Konto, Schnellstart, FPS-Boost, Mods mit einem Klick, Emotes und animierten Capes – und Updates, die sich selbst installieren.</p>
       <div class="cta">
-        <a class="btn primary dl" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.6/THHO-Client-Setup-1.11.6.exe"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg><span class="dlText">THHO Client 1.11.6 herunterladen</span></a>
-        <a class="btn ghost" href="#features">Features ansehen</a>
+        <a class="btn primary dl dlWin" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.11/THHO-Client-Setup-1.11.11.exe"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg><span class="dlText">Windows · Version 1.11.11</span></a>
+        <a class="btn ghost dlLinux" href="#" hidden><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Linux</a>
+        <a class="btn ghost dlMac" href="#" hidden><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Mac</a>
       </div>
-      <div class="meta"><span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Kostenlos</span><span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Windows 10 / 11</span><span id="size"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Automatische Updates</span></div>
+      <div class="oslinks" id="osLinks" hidden>Älterer Mac mit Intel-Chip? <a class="dlMacIntel" href="#">Intel-Version laden</a></div>
+      <div class="linhint" id="linHint" hidden>Linux: entpacken und <code>./install.sh</code> starten – danach im Startmenü.</div>
+      <div class="linhint" id="macHint" hidden>Mac: Zip öffnen, „THHO Client“ in Programme ziehen. Beim ersten Start einmal Rechtsklick → Öffnen (oder im Terminal: <code>xattr -cr "/Applications/THHO Client.app"</code>).</div>
+      <div class="meta"><span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Kostenlos</span><span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Windows · Linux · Mac</span><span id="size"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Automatische Updates</span></div>
     </div>
     <div class="mock" aria-hidden="true">
       <div class="bar"><svg viewBox="0 0 32 32"><g transform="translate(16 16) scale(.047) translate(-625 -620)" fill="currentColor"><path d="M366 481 483 399V835L391 769V487Z"/><path d="M886 478 758 389V865L860 796V484Z"/><path d="M564 371 643 306V465L564 510Z"/><path d="M564 646 643 691V870L564 938Z"/><path d="M503 497 738 634V672L503 598Z" opacity=".75"/></g></svg>THHO CLIENT<span class="chip">PRO</span></div>
@@ -167,28 +184,45 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
 
   <section id="faq">
     <div class="sh"><div class="k">FAQ</div><h2>Häufige Fragen</h2></div>
-    <div class="faq"><details><summary>Ist der THHO Client kostenlos?</summary><p>Ja. Der Client mit allen Grundfunktionen ist kostenlos. THHO Pro und Kristalle für den Shop sind optional.</p></details><details><summary>Brauche ich Minecraft?</summary><p>Ja, du meldest dich mit dem Microsoft-Konto an, mit dem du Minecraft Java Edition gekauft hast.</p></details><details><summary>Ist das erlaubt auf Servern?</summary><p>Der THHO Client enthält keine Cheats. PvP-Anzeigen zeigen nur Informationen, die dein Spiel ohnehin hat.</p></details><details><summary>Wie bekomme ich Updates?</summary><p>Automatisch: Der Client lädt neue Versionen selbst und installiert sie, sobald Minecraft geschlossen ist.</p></details></div>
+    <div class="faq"><details><summary>Ist der THHO Client kostenlos?</summary><p>Ja. Der Client mit allen Grundfunktionen ist kostenlos. THHO Pro und Kristalle für den Shop sind optional.</p></details><details><summary>Brauche ich Minecraft?</summary><p>Ja, du meldest dich mit dem Microsoft-Konto an, mit dem du Minecraft Java Edition gekauft hast.</p></details><details><summary>Ist das erlaubt auf Servern?</summary><p>Der THHO Client enthält keine Cheats. PvP-Anzeigen zeigen nur Informationen, die dein Spiel ohnehin hat.</p></details><details><summary>Läuft der THHO Client auf Linux?</summary><p>Ja. Lade das Linux-Paket (.tar.gz), entpacke es und starte install.sh – danach findest du den THHO Client im Startmenü. Updates kommen auch unter Linux automatisch.</p></details><details><summary>Gibt es den THHO Client für Mac?</summary><p>Ja, für Macs mit Apple-Chip (M1 und neuer) und für ältere Intel-Macs. Zip öffnen, THHO Client in „Programme“ ziehen und beim ersten Start einmal mit Rechtsklick → Öffnen starten.</p></details><details><summary>Wie bekomme ich Updates?</summary><p>Automatisch: Der Client lädt neue Versionen selbst und installiert sie, sobald Minecraft geschlossen ist.</p></details></div>
   </section>
 
   <section>
-    <div class="final"><h2>Bereit für den THHO Client?</h2><p>Kostenlos für Windows 10 und 11.</p><a class="btn primary dl" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.6/THHO-Client-Setup-1.11.6.exe"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg><span class="dlText">Jetzt herunterladen</span></a></div>
+    <div class="final"><h2>Bereit für den THHO Client?</h2><p>Kostenlos für Windows, Linux und Mac.</p><div class="cta" style="justify-content:center;margin-top:18px"><a class="btn primary dl dlWin" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.11/THHO-Client-Setup-1.11.11.exe"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Windows</a><a class="btn ghost dlLinux" href="#" hidden><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Linux</a><a class="btn ghost dlMac" href="#" hidden><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Mac</a></div></div>
   </section>
 </main>
 <footer><div class="wrap"><span>© THHO Client</span><span>Nicht offiziell von Mojang oder Microsoft.</span></div></footer>
 <script>
-function show(v, url, size) {
+const UA = navigator.userAgent;
+const IS_MAC = /Macintosh|Mac OS X/.test(UA) && !/iPhone|iPad/.test(UA);
+const IS_LINUX = !IS_MAC && /Linux|X11/.test(UA) && !/Android|CrOS/.test(UA);
+// Windows bleibt immer der Hauptknopf (leuchtet); Linux und Mac daneben.
+function show(v, url, size, linux, mac) {
   if (!v || !url) return false;
-  document.querySelectorAll('.dl').forEach(a => { a.href = url; });
-  document.querySelectorAll('.dlText').forEach(s => { s.textContent = 'THHO Client ' + v + ' herunterladen'; });
+  document.querySelectorAll('.dlWin').forEach(a => { a.href = url; });
+  document.querySelectorAll('.dlText').forEach(s => { s.textContent = 'Windows · Version ' + v; });
+  if (linux && linux.url) document.querySelectorAll('.dlLinux').forEach(a => { a.href = linux.url; a.hidden = false; });
+  const m = mac && (mac.arm64 || mac.x64);
+  if (m && m.url) document.querySelectorAll('.dlMac').forEach(a => { a.href = m.url; a.hidden = false; });
+  if (mac && mac.arm64 && mac.x64) document.querySelector('.dlMacIntel').href = mac.x64.url;
+  document.getElementById('osLinks').hidden = !(IS_MAC && mac && mac.arm64 && mac.x64);
+  document.getElementById('linHint').hidden = !(IS_LINUX && linux && linux.url);
+  document.getElementById('macHint').hidden = !(IS_MAC && m && m.url);
   document.getElementById('verPill').textContent = 'Version ' + v + ' · Minecraft 1.21.11';
   if (size) document.getElementById('size').lastChild.textContent = (size / 1048576).toFixed(0) + ' MB';
   return true;
 }
+show('1.11.11', 'https://github.com/bennoskin02/thho-client/releases/download/v1.11.11/THHO-Client-Setup-1.11.11.exe', 0, null, null);
 // Neueste Version: erst thho-config.json, sonst direkt das neueste GitHub-Release (mit Setup-Datei)
-fetch('thho-config.json?t=' + Date.now()).then(r => r.json()).then(c => c.latest && show(c.latest.version, c.latest.url, c.latest.size)).catch(() => false).then(ok => {
+fetch('thho-config.json?t=' + Date.now()).then(r => r.json()).then(c => c.latest && show(c.latest.version, c.latest.url, c.latest.size, c.latest.linux, c.latest.mac)).catch(() => false).then(ok => {
   if (ok) return;
   return fetch('https://api.github.com/repos/bennoskin02/thho-client/releases').then(r => r.json()).then(list => {
-    for (const r of list || []) { const a = (r.assets || []).find(x => /.exe$/i.test(x.name) && x.size > 1000000); if (a) return show(String(r.tag_name).replace(/^v/, ''), a.browser_download_url, a.size); }
+    for (const r of list || []) {
+      const a = (r.assets || []).find(x => /.exe$/i.test(x.name) && x.size > 1000000);
+      const f = re => { const x = (r.assets || []).find(x => re.test(x.name) && x.size > 1000000); return x && { url: x.browser_download_url, size: x.size }; };
+      const ma = f(/mac-arm64.*.zip$/i), mi = f(/mac-x64.*.zip$/i);
+      if (a) return show(String(r.tag_name).replace(/^v/, ''), a.browser_download_url, a.size, f(/linux.*.tar.gz$/i), (ma || mi) && { ...(ma ? { arm64: ma } : {}), ...(mi ? { x64: mi } : {}) });
+    }
   });
 }).catch(() => {});
 </script>
