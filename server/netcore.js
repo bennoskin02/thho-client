@@ -3,7 +3,7 @@
 // Anmeldung über den echten Minecraft-Account (Mojang "hasJoined"-Prüfung) – niemand kann sich als jemand anderes ausgeben.
 
 const isDeno = typeof Deno !== 'undefined';
-const VERSION = 8;
+const VERSION = 9;
 const MAX_IDS = 120;
 const env = k => (isDeno ? Deno.env.get(k) : typeof process !== 'undefined' ? process.env[k] : '') || '';
 const MOJANG = env('THHO_MOJANG') || 'https://sessionserver.mojang.com'; // Override nur für Tests
@@ -188,7 +188,7 @@ async function handle(req) {
   // Diagnose: erreicht der Server die Mojang-/Microsoft-Dienste?
   if (p === '/diag') {
     const st = async u => { try { const r = await fetch(u, { headers: { 'User-Agent': 'THHO-Netz' } }); return r.status; } catch (e) { return String(e).slice(0, 80); } };
-    return json({ version: VERSION, storage: store.kind, hasJoined: await st(`${MOJANG}/session/minecraft/hasJoined?username=Notch&serverId=deadbeef`), services: await st('https://api.minecraftservices.com/minecraft/profile') });
+    return json({ version: VERSION, storage: store.kind, ai: !!globalThis.__THHO_AI, hasJoined: await st(`${MOJANG}/session/minecraft/hasJoined?username=Notch&serverId=deadbeef`), services: await st('https://api.minecraftservices.com/minecraft/profile') });
   }
 
   // Anmeldung: Der Launcher meldet sich vorher bei Mojang mit serverId an ("join"), wir prüfen das hier.
@@ -248,16 +248,25 @@ async function handle(req) {
 
   // Abfrage für Spieler in der Nähe: { ids: [uuid ohne Striche, …] }
   if (p === '/q' && req.method === 'POST') {
-    const { ids } = await body(req);
+    const { ids, names } = await body(req);
     const list = (Array.isArray(ids) ? ids : []).map(s => String(s).replace(/-/g, '').toLowerCase()).filter(uuidOk).slice(0, MAX_IDS);
     const vals = await store.many(list.map(u => ['p', u]));
-    const now = Date.now(), out = {};
-    list.forEach((u, i) => {
-      const v = vals[i]; if (!v) return;
+    const now = Date.now(), out = {}, byName = {};
+    const view = v => {
       const emoteOn = v.emote && now - v.emoteAt < 5 * 60_000;
-      out[u] = { cape: v.cape || null, emote: emoteOn ? v.emote : null, ago: emoteOn ? now - v.emoteAt : 0, look: v.look || { colors: [], anim: 'static', logo: true, logoColor: null } };
-    });
-    return json({ now, players: out });
+      return { cape: v.cape || null, emote: emoteOn ? v.emote : null, ago: emoteOn ? now - v.emoteAt : 0, look: v.look || { colors: [], anim: 'static', logo: true, logoColor: null } };
+    };
+    list.forEach((u, i) => { const v = vals[i]; if (v) out[u] = view(v); });
+    // Offline-/Proxy-Server (andere UUIDs): THHO-Spieler über den Namen finden
+    const nl = (Array.isArray(names) ? names : []).map(n => String(n)).filter(n => /^[A-Za-z0-9_]{1,16}$/.test(n)).slice(0, 60);
+    if (nl.length) {
+      const idx = await store.many(nl.map(n => ['name', n.toLowerCase()]));
+      const us = idx.map(x => x && x.uuid).filter(Boolean);
+      const pv = await store.many(us.map(u => ['p', u]));
+      let k = 0;
+      nl.forEach((n, i) => { if (!idx[i]?.uuid) return; const v = pv[k++]; if (v && v.seen && now - v.seen < 10 * 60_000) byName[n.toLowerCase()] = { ...view(v), uuid: idx[i].uuid }; });
+    }
+    return json({ now, players: out, names: byName });
   }
 
   // ---------------- Eigene Capes (jedes Cape-Bild, auch eigene Designs) ----------------
@@ -298,6 +307,46 @@ async function handle(req) {
       await store.set(['p', me.uuid], cur, 1000 * 60 * 60 * 24 * 60);
       return json({ ok: true, cape: cur.cape });
     }
+  }
+
+  // ---------------- KI-Hilfe (Cloudflare Workers AI, Binding „AI“) ----------------
+  if (p === '/ai' && req.method === 'POST') {
+    const me = await who(req);
+    if (!me) return fail('Bitte neu anmelden', 401);
+    const AI = globalThis.__THHO_AI;
+    if (!AI) return fail('Die KI-Hilfe ist auf dem Server noch nicht eingeschaltet (Workers-AI-Binding „AI“ fehlt).', 503);
+    const day = new Date().toISOString().slice(0, 10);
+    const used = (await store.get(['aiUse', me.uuid, day])) || 0;
+    if (used >= 40) return fail('Tageslimit der KI-Hilfe erreicht (40 Fragen) – morgen geht es weiter.', 429);
+    await store.set(["aiUse", me.uuid, day], used + 1, 2 * 86400_000);
+    const b = await body(req);
+    const msgs = (Array.isArray(b.messages) ? b.messages : []).slice(-12)
+      .map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.content || '').slice(0, 4000) }))
+      .filter(m => m.content.trim());
+    if (!msgs.length || msgs[msgs.length - 1].role !== 'user') return fail('Leere Frage');
+    const c = b.ctx && typeof b.ctx === 'object' ? b.ctx : {};
+    let sys = `Du bist „THHO KI“, der Assistent im THHO Client – einem Minecraft-Java-Launcher (Electron) mit eigener Fabric-Mod, Hauptversion Minecraft ${String(c.mc || '1.21.11').slice(0, 12)}.
+Du beantwortest ALLE Fragen rund um Minecraft und den THHO Client ausführlich und kompetent, zum Beispiel:
+- Spielmechaniken, Crafting-Rezepte, Verzauberungen, Tränke, Mobs, Biome, Strukturen, Farmen, Redstone-Schaltungen, Befehle (/commands), Datapacks, Seeds, Speedrun- und PvP-Tipps, Bauideen, Survival-Strategien.
+- Java Edition-Technik: Versionen, Mods (Fabric/Forge/NeoForge/Quilt), Shader, Ressourcenpakete, Performance/FPS, Server (beitreten, eigenen Server aufsetzen, Plugins, Aternos), Fehler und Abstürze.
+- Den THHO Client: Anmeldung mit Microsoft-Konto; Tab „Versionen“ (Instanzen, eigener RAM pro Instanz); Tab „Mods“ (Mods/Shader/Texturen von Modrinth installieren, an/aus schalten, aktualisieren); Tab „Skins“ (Skins & Capes); Tab „Server“ (Favoriten, direkt beitreten); Tab „Community“ (Freunde, Chat mit Bildern/Clips/Skin-Emotes, Bestenliste, Live-Status, öffentliches Profil); Tab „Clips“ (F8 ingame oder Alt+F9 speichert die letzten Sekunden); Tab „Bilder“ (Screenshots); Tab „Spielzeit“; Tab „Konsole“ (Spiel-Log); Tab „Hilfe“ (Absturz-Analyse und du); Einstellungen (RAM-Regler, Java automatisch oder eigener Pfad, Theme, Akzentfarbe, Discord-Status, Kindersicherung). Shop mit Kristallen (Namensfarben, Emotes, Capes) und THHO Pro (animierte Namen, Pro-Capes, Profil-Banner). Andere THHO-Spieler sehen Cape, Namensfarbe, Logo und Emotes. Updates installieren sich automatisch.
+Regeln:
+- Antworte immer auf Deutsch (außer der Nutzer schreibt in einer anderen Sprache), freundlich und gut strukturiert. Nutze Schritt-für-Schritt-Listen, wenn es hilft. Bei einfachen Fragen kurz, bei komplexen Themen (Redstone, Farmen, Server-Setup, Mods) ruhig ausführlich.
+- Sei genau: Rezepte, Befehle und Werte müssen für Java Edition stimmen. Wenn sich etwas zwischen Versionen unterscheidet, sag das. Wenn du dir nicht sicher bist, sag es ehrlich statt zu raten. Erfinde keine Menüs oder Funktionen des THHO Clients.
+- Keine Hilfe bei Cheats/Hacks/X-Ray auf Servern, Account-Diebstahl oder Umgehen von Bans. Nie nach Passwörtern, Tokens oder Zahlungsdaten fragen.
+- Themen ohne Bezug zu Minecraft/Gaming/dem Client lehnst du freundlich ab und lenkst zurück.
+System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String(c.os || '?').slice(0, 20)}, RAM für Minecraft ${Number(c.ram) || '?'} MB.`;
+    if (c.crash && typeof c.crash === 'object') {
+      const k = c.crash;
+      sys += `\n\nLetzter Absturz:\nFehler: ${String(k.error || '').slice(0, 300)}\nBeschreibung: ${String(k.description || '').slice(0, 200)}\nErkannte Ursachen: ${(Array.isArray(k.causes) ? k.causes : []).slice(0, 5).map(String).join(', ').slice(0, 300)}\nVerdächtige Mods: ${(Array.isArray(k.mods) ? k.mods : []).slice(0, 6).map(String).join(', ').slice(0, 200)}\nAuszug:\n${String(k.excerpt || '').slice(0, 2200)}`;
+    }
+    const run = model => AI.run(model, { messages: [{ role: 'system', content: sys }, ...msgs], max_tokens: 1800, temperature: 0.5 });
+    let out;
+    try { out = await run('@cf/meta/llama-3.3-70b-instruct-fp8-fast'); }
+    catch { try { out = await run('@cf/meta/llama-3.1-8b-instruct'); } catch (e) { return fail('KI gerade nicht erreichbar: ' + String(e?.message || e).slice(0, 120), 502); } }
+    const answer = String(out?.response || '').trim();
+    if (!answer) return fail('Die KI hat keine Antwort gegeben – bitte nochmal versuchen.', 502);
+    return json({ answer: answer.slice(0, 9000), left: 39 - used });
   }
 
   // ---------------- Bestenliste, Live, Profile ----------------
