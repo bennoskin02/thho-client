@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-21T12:52:27.350Z",
+  "updated": "2026-10-21T12:54:13.738Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -39,7 +39,8 @@
     "d92ebef3984482cc27cbcbbe45cc049096c2db43d73c3715685ba24566ea9011": 3000,
     "4b5fa35ee47bbdd72f19b43074d3e5201ad874a2d40e410979f098d13dc4690d": 3000,
     "8658c25524ad63ac4af45dfc84a28ddef0172cb97c8d1eb91ec3333cee771c6e": 3000,
-    "d5f250573b94f2d4b66b8afa7393f924576a68444df7dc42a1c48f2b9c15babc": 3000
+    "d5f250573b94f2d4b66b8afa7393f924576a68444df7dc42a1c48f2b9c15babc": 3000,
+    "d4c1b9fa5c643298f2d94344052b12fb026b2e95ff3bbf492e9a0d7dd17588fc": 3000
   },
   "packPrices": {
     "k500": "",
