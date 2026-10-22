@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-22T12:08:07.616Z",
+  "updated": "2026-10-22T14:24:09.120Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -11,26 +11,12 @@
   "price": "5",
   "news": "",
   "latest": {
-    "version": "1.11.12",
-    "tag": "v1.11.12",
-    "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.12/THHO-Client-Setup-1.11.12.exe",
-    "size": 94593432,
-    "notes": "",
-    "date": "2026-10-22T12:01:36Z",
-    "linux": {
-      "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.12/THHO-Client-1.11.12-linux.tar.gz",
-      "size": 117311598
-    },
-    "mac": {
-      "arm64": {
-        "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.12/THHO-Client-1.11.12-mac-arm64.zip",
-        "size": 110149397
-      },
-      "x64": {
-        "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.12/THHO-Client-1.11.12-mac-x64.zip",
-        "size": 115273743
-      }
-    }
+    "version": "1.0.0",
+    "tag": "v1.0.0",
+    "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.0.0/THHO-Client-Setup-1.0.0.exe",
+    "size": 103391368,
+    "notes": "Besser!",
+    "date": "2026-10-22T14:24:08.552Z"
   },
   "crystalCodes": {
     "164df1cef245a17c7ef9db8fb7c97f4f61c376c2efd49e709b7f24f86537c2f0": 3000,
