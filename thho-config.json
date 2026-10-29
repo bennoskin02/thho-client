@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-10-27T02:23:20.408Z",
+  "updated": "2026-10-29T22:06:06.217Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -14,21 +14,21 @@
     "version": "1.11.12",
     "tag": "v1.11.12",
     "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.12/THHO-Client-Setup-1.11.12.exe",
-    "size": 103562893,
-    "notes": "",
-    "date": "2026-10-27T02:18:17.663Z",
+    "size": 103571580,
+    "notes": "neues theme!",
+    "date": "2026-10-29T22:00:13.272Z",
     "linux": {
       "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.12/THHO-Client-1.11.12-linux.tar.gz",
-      "size": 126243978
+      "size": 126253182
     },
     "mac": {
       "arm64": {
         "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.12/THHO-Client-1.11.12-mac-arm64.zip",
-        "size": 119082522
+        "size": 119098238
       },
       "x64": {
         "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.12/THHO-Client-1.11.12-mac-x64.zip",
-        "size": 124206868
+        "size": 124222584
       }
     }
   },
