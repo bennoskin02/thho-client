@@ -3,7 +3,7 @@
 // Anmeldung über den echten Minecraft-Account (Mojang "hasJoined"-Prüfung) – niemand kann sich als jemand anderes ausgeben.
 
 const isDeno = typeof Deno !== 'undefined';
-const VERSION = 13;
+const VERSION = 14;
 const MAX_IDS = 120;
 const env = k => (isDeno ? Deno.env.get(k) : typeof process !== 'undefined' ? process.env[k] : '') || '';
 const MOJANG = env('THHO_MOJANG') || 'https://sessionserver.mojang.com'; // Override nur für Tests
@@ -511,6 +511,145 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
       await dropFrom(['fr', me.uuid], other); await dropFrom(['fr', other], me.uuid);
       return json({ ok: true });
     }
+  }
+
+  // ---------------- Discord-Brücke (Spieler mit Token, Bot mit Geheimnis THHO_BOT_SECRET) ----------------
+  if (p.startsWith('/bridge/')) {
+    const DAY = 86400_000;
+    const del = k => store.set(k, null, 1000);
+    const clean = t => String(t ?? '').replace(/§./g, '').replace(/[\u0000-\u001f\u007f]+/g, ' ').trim().slice(0, 300);
+    const log = async (src, who, text) => {
+      const t = Date.now(), m = { id: randomToken().slice(0, 12), t, src, uuid: who.uuid, name: who.name, dc: src === 'dc' ? who.discordName || null : null, text };
+      await store.set(['bc', String(t).padStart(14, '0') + m.id], m, DAY);
+      return m;
+    };
+    const recent = async (since, src) => (await store.list(['bc'], 30)).filter(m => m && m.t > since && (!src || m.src === src));
+    // Höchstens eine Nachricht alle 2 Sekunden, gesperrte Spieler gar nicht
+    const maySay = async uuid => {
+      if (await store.get(['dcBan', uuid])) return 'Du bist für die Discord-Brücke gesperrt.';
+      if (await store.get(['dcRate', uuid])) return 'Nicht so schnell – warte kurz.';
+      await store.set(['dcRate', uuid], 1, 2000);
+      return null;
+    };
+    const unlink = async link => { await del(['dcUser', link.uuid]); await del(['dcId', link.discordId]); };
+    const push = async (uuid, item) => {
+      const box = (await store.get(['dcInbox', uuid])) || [];
+      box.push({ ...item, t: Date.now() });
+      await store.set(['dcInbox', uuid], box.slice(-20), DAY);
+    };
+
+    if (p.startsWith('/bridge/bot/')) {
+      const secret = globalThis.__THHO_BOT_SECRET || env('THHO_BOT_SECRET');
+      if (!secret) return fail('Discord-Brücke ist auf dem Server nicht eingerichtet', 503);
+      if ((req.headers.get('authorization') || '') !== 'Bot ' + secret) return fail('Falsches Bot-Geheimnis', 403);
+      const route = p.slice('/bridge/bot/'.length);
+      if (req.method === 'GET') {
+        if (route === 'poll') return json({ now: Date.now(), messages: await recent(Number(url.searchParams.get('since')) || 0, 'mc') });
+        if (route === 'whois') return json({ link: await store.get(['dcId', String(url.searchParams.get('discordId'))]) });
+        if (route === 'online') {
+          // Nur verknüpfte Spieler – und nur, wenn ihre Privatsphäre-Einstellungen das erlauben
+          const links = (await store.list(['dcUser'])).filter(Boolean);
+          const vals = await store.many(links.map(l => ['p', l.uuid]));
+          const players = vals.filter(v => v && isOnline(v) && priv(v).live && priv(v).public).map(publicView).map(v => ({ uuid: v.uuid, name: v.name, status: v.status, server: v.server, mc: v.mc, pro: v.pro }));
+          return json({ linked: links.length, players });
+        }
+        return fail('Nicht gefunden', 404);
+      }
+      if (req.method !== 'POST') return fail('Nicht gefunden', 404);
+      const b = await body(req);
+      const discordId = /^\d{5,25}$/.test(b.discordId || '') ? b.discordId : null;
+      if (route === 'ban') {
+        const n = await store.get(['name', String(b.name || '').toLowerCase()]);
+        if (!n) return fail('Diesen Spieler gibt es im THHO-Netz nicht.', 404);
+        if (b.banned === false) await del(['dcBan', n.uuid]); else await store.set(['dcBan', n.uuid], { by: discordId, at: Date.now() });
+        return json({ ok: true, name: n.name, banned: b.banned !== false });
+      }
+      if (!discordId) return fail('Ungültige Discord-ID');
+      if (route === 'link') {
+        const code = String(b.code || '').trim().toUpperCase();
+        const c = /^[A-Z2-9]{6}$/.test(code) ? await store.get(['dcCode', code]) : null;
+        if (!c) return fail('Der Code ist falsch oder abgelaufen. Hol dir ingame mit /thho link einen neuen.', 404);
+        await del(['dcCode', code]);
+        const oldMc = await store.get(['dcUser', c.uuid]), oldDc = await store.get(['dcId', discordId]);
+        if (oldMc) await unlink(oldMc);
+        if (oldDc && oldDc.uuid !== c.uuid) await unlink(oldDc);
+        const link = { uuid: c.uuid, name: c.name, discordId, discordName: clean(b.discordName).slice(0, 40), at: Date.now() };
+        await store.set(['dcUser', c.uuid], link);
+        await store.set(['dcId', discordId], link);
+        await push(c.uuid, { type: 'linked', from: link.discordName });
+        return json({ ok: true, link });
+      }
+      const link = await store.get(['dcId', discordId]);
+      if (!link) return fail('Dein Discord ist noch nicht verknüpft. Ingame: /thho link, dann hier /link.', 404);
+      if (route === 'unlink') { await unlink(link); return json({ ok: true, name: link.name }); }
+      if (route === 'say') {
+        const text = clean(b.text);
+        if (!text) return fail('Leere Nachricht');
+        const no = await maySay(link.uuid);
+        if (no) return fail(no, 429);
+        await log('dc', { ...link, discordName: clean(b.discordName).slice(0, 40) || link.discordName }, text);
+        return json({ ok: true });
+      }
+      if (route === 'emote') {
+        if (!idOk(b.emote) || !b.emote) return fail('Ungültiges Emote');
+        const v = await store.get(['p', link.uuid]);
+        await push(link.uuid, { type: 'emote', emote: b.emote });
+        return json({ ok: true, name: link.name, online: !!(v && isOnline(v)) });
+      }
+      if (route === 'ping') {
+        // Wie die Chats im Launcher: nur zwischen Freunden
+        const t = await store.get(['name', String(b.target || '').toLowerCase()]);
+        const text = clean(b.text);
+        if (!t || !(await store.get(['fr', link.uuid]) || []).includes(t.uuid)) return fail('Du kannst nur THHO-Freunde anpingen.', 403);
+        if (!text) return fail('Leere Nachricht');
+        if (!(await store.get(['dcUser', t.uuid]))) return fail(t.name + ' hat die Discord-Brücke nicht verknüpft.', 404);
+        const no = await maySay(link.uuid);
+        if (no) return fail(no, 429);
+        await push(t.uuid, { type: 'ping', from: link.name, text });
+        return json({ ok: true, name: t.name });
+      }
+      return fail('Nicht gefunden', 404);
+    }
+
+    const me = await who(req);
+    if (!me) return fail('Bitte neu anmelden', 401);
+    const link = await store.get(['dcUser', me.uuid]);
+    if (p === '/bridge/link' && req.method === 'POST') {
+      const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const code = [...crypto.getRandomValues(new Uint8Array(6))].map(x => abc[x % abc.length]).join('');
+      await store.set(['dcCode', code], { uuid: me.uuid, name: me.name }, 10 * 60_000);
+      return json({ code, minutes: 10, linked: link ? link.discordName : null });
+    }
+    if (p === '/bridge/unlink' && req.method === 'POST') {
+      if (link) await unlink(link);
+      return json({ ok: true, was: link ? link.discordName : null });
+    }
+    if (p === '/bridge/poll') {
+      const now = Date.now();
+      if (!link) return json({ now, linked: false });
+      const box = (await store.get(['dcInbox', me.uuid])) || [];
+      if (box.length) await del(['dcInbox', me.uuid]);
+      const since = Number(url.searchParams.get('since')) || 0;
+      // Ohne „since“ nichts Altes nachliefern; eigene Spiel-Nachrichten kennt der Client schon
+      const chat = since ? (await recent(since)).filter(m => m.src === 'dc' || m.uuid !== me.uuid) : [];
+      return json({ now, linked: true, discord: link.discordName, chat, inbox: box });
+    }
+    if (p === '/bridge/say' && req.method === 'POST') {
+      if (!link) return fail('Verknüpfe zuerst dein Discord: /thho link', 403);
+      const b = await body(req);
+      const text = clean(b.text);
+      if (!text) return fail('Leere Nachricht');
+      const no = await maySay(me.uuid);
+      if (no) return fail(no, 429);
+      await log('mc', link, text);
+      return json({ ok: true });
+    }
+    if (p === '/bridge/online') {
+      const links = (await store.list(['dcUser'])).filter(Boolean);
+      const vals = await store.many(links.map(l => ['p', l.uuid]));
+      return json({ players: vals.filter(v => v && isOnline(v) && priv(v).live && priv(v).public).map(publicView).map(v => ({ name: v.name, status: v.status, server: v.server })) });
+    }
+    return fail('Nicht gefunden', 404);
   }
 
   return fail('Nicht gefunden', 404);
