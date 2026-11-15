@@ -652,6 +652,48 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
     return fail('Nicht gefunden', 404);
   }
 
+  // ---------------- Ingame-Admins (Namen legt der Betreiber im Launcher fest: THHO_ADMINS) ----------------
+  if (p.startsWith('/admin/')) {
+    const me = await who(req);
+    if (!me) return fail('Bitte neu anmelden', 401);
+    const admins = String(globalThis.__THHO_ADMINS || env('THHO_ADMINS')).toLowerCase().split(',').map(s => s.trim()).filter(Boolean);
+    const isAdmin = admins.includes(String(me.name).toLowerCase());
+    if (p === '/admin/me') return json({ admin: isAdmin });
+    if (!isAdmin) return fail('Kein Admin', 403);
+    if (p === '/admin/online') {
+      const all = (await allPlayers(store)).filter(v => isOnline(v));
+      return json({ players: all.map(v => ({ uuid: v.uuid, name: v.name, server: v.server || null, pro: !!v.pro })).sort((a, b) => a.name.localeCompare(b.name)).slice(0, 200) });
+    }
+    if (p === '/admin/act' && req.method === 'POST') {
+      const b = await body(req);
+      const to = String(b.to || '').replace(/-/g, '').toLowerCase();
+      if (!uuidOk(to)) return fail('Spieler unbekannt');
+      // Nur Geschenke und harmlose, sichtbare Effekte – nichts, was den Spieler steuert
+      const KINDS = {
+        emote: x => (typeof x === 'string' && /^[a-z0-9_]{1,24}$/.test(x) ? x : null),
+        fx: x => (['confetti', 'lightning', 'hearts', 'snow', 'firework'].includes(x) ? x : null),
+        msg: x => String(x || '').replace(/[<>\u00a7]/g, '').trim().slice(0, 80) || null,
+        crystals: x => { const n = Math.floor(Number(x)); return n > 0 && n <= 100000 ? n : null; },
+        item: x => (typeof x === 'string' && /^[a-z]{1,2}_[a-z0-9_]{1,30}$/.test(x) ? x : null),
+      };
+      const arg = KINDS[b.kind] ? KINDS[b.kind](b.arg) : null;
+      if (arg === null) return fail('Ungültige Aktion');
+      const box = (await store.get(['inbox', to])) || [];
+      box.push({ id: randomToken().slice(0, 12), from: me.name, kind: b.kind, arg, at: Date.now() });
+      await store.set(['inbox', to], box.slice(-30), 1000 * 60 * 60 * 24 * 7);
+      return json({ ok: true });
+    }
+    return fail('Unbekannte Admin-Aktion', 404);
+  }
+  // Eigener Posteingang (Geschenke und Aktionen von Admins): abholen und leeren
+  if (p === '/inbox' && req.method === 'POST') {
+    const me = await who(req);
+    if (!me) return fail('Bitte neu anmelden', 401);
+    const box = (await store.get(['inbox', me.uuid])) || [];
+    if (box.length) await store.set(['inbox', me.uuid], [], 1000);
+    return json({ items: box });
+  }
+
   return fail('Nicht gefunden', 404);
 }
 
