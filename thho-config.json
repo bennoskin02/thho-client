@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-11-15T03:36:43.624Z",
+  "updated": "2026-11-15T03:36:53.547Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -16,7 +16,7 @@
     "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-Setup-1.11.13.exe",
     "size": 103663736,
     "notes": "Big Update!",
-    "date": "2026-11-15T03:31:45.827Z",
+    "date": "2026-11-15T03:30:21Z",
     "linux": {
       "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-1.11.13-linux.tar.gz",
       "size": 126323232
