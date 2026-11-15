@@ -3,9 +3,12 @@
 // Anmeldung über den echten Minecraft-Account (Mojang "hasJoined"-Prüfung) – niemand kann sich als jemand anderes ausgeben.
 
 const isDeno = typeof Deno !== 'undefined';
-const VERSION = 14;
+const VERSION = 16;
 const MAX_IDS = 120;
 const env = k => (isDeno ? Deno.env.get(k) : typeof process !== 'undefined' ? process.env[k] : '') || '';
+// Fingerabdruck (SHA-256) des Bot-Geheimnisses aus discord-bot/.env – das Geheimnis selbst steht nirgends im Code.
+// So braucht der Bot kein Cloudflare-Secret; ein gesetztes Secret THHO_BOT_SECRET gilt zusätzlich.
+const BOT_KEY_SHA256 = 'cdf63c06a07c8d6366504e283f518a25f9f6c1a25a9d2614f537d116a86fbaab';
 const MOJANG = env('THHO_MOJANG') || 'https://sessionserver.mojang.com'; // Override nur für Tests
 
 // ---------------- Speicher ----------------
@@ -539,9 +542,11 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
     };
 
     if (p.startsWith('/bridge/bot/')) {
-      const secret = globalThis.__THHO_BOT_SECRET || env('THHO_BOT_SECRET');
-      if (!secret) return fail('Discord-Brücke ist auf dem Server nicht eingerichtet', 503);
-      if ((req.headers.get('authorization') || '') !== 'Bot ' + secret) return fail('Falsches Bot-Geheimnis', 403);
+      const secret = String(globalThis.__THHO_BOT_SECRET || env('THHO_BOT_SECRET')).trim(); // beim Einfügen rutschen gern Leerzeichen oder Zeilenumbrüche mit
+      const given = (req.headers.get('authorization') || '').trim().replace(/^Bot /, '');
+      const sha = async t => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)))].map(b => b.toString(16).padStart(2, '0')).join('');
+      if (!secret && !BOT_KEY_SHA256) return fail('Discord-Brücke ist auf dem Server nicht eingerichtet', 503);
+      if (!given || !((secret && given === secret) || (BOT_KEY_SHA256 && await sha(given) === BOT_KEY_SHA256))) return fail('Falsches Bot-Geheimnis', 403);
       const route = p.slice('/bridge/bot/'.length);
       if (req.method === 'GET') {
         if (route === 'poll') return json({ now: Date.now(), messages: await recent(Number(url.searchParams.get('since')) || 0, 'mc') });
@@ -673,17 +678,28 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
         emote: x => (typeof x === 'string' && /^[a-z0-9_]{1,24}$/.test(x) ? x : null),
         fx: x => (['confetti', 'lightning', 'hearts', 'snow', 'firework'].includes(x) ? x : null),
         msg: x => String(x || '').replace(/[<>\u00a7]/g, '').trim().slice(0, 80) || null,
-        crystals: x => { const n = Math.floor(Number(x)); return n > 0 && n <= 100000 ? n : null; },
+        crystals: x => { const n = Math.floor(Number(x)); return n !== 0 && Math.abs(n) <= 100000 ? n : null; },
         item: x => (typeof x === 'string' && /^[a-z]{1,2}_[a-z0-9_]{1,30}$/.test(x) ? x : null),
+        take: x => (typeof x === 'string' && /^[a-z]{1,2}_[a-z0-9_]{1,30}$/.test(x) ? x : null),
+        pro: x => (x === 'on' || x === 'off' ? x : null),
       };
       const arg = KINDS[b.kind] ? KINDS[b.kind](b.arg) : null;
       if (arg === null) return fail('Ungültige Aktion');
+      // Pro wird zusätzlich am Server gemerkt, damit der Launcher es beim nächsten Start auch weiß
+      if (b.kind === 'pro') await store.set(['grant', to], { pro: arg === 'on', by: me.name, at: Date.now() });
       const box = (await store.get(['inbox', to])) || [];
       box.push({ id: randomToken().slice(0, 12), from: me.name, kind: b.kind, arg, at: Date.now() });
       await store.set(['inbox', to], box.slice(-30), 1000 * 60 * 60 * 24 * 7);
       return json({ ok: true });
     }
     return fail('Unbekannte Admin-Aktion', 404);
+  }
+  // Pro, das ein Admin vergeben oder entzogen hat (null = nichts festgelegt)
+  if (p === '/grant' && req.method === 'POST') {
+    const me = await who(req);
+    if (!me) return fail('Bitte neu anmelden', 401);
+    const g = await store.get(['grant', me.uuid]);
+    return json({ pro: g ? !!g.pro : null });
   }
   // Eigener Posteingang (Geschenke und Aktionen von Admins): abholen und leeren
   if (p === '/inbox' && req.method === 'POST') {
