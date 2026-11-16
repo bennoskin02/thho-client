@@ -242,7 +242,7 @@ async function handle(req) {
     if (b.look && typeof b.look === 'object') {
       const cols = (Array.isArray(b.look.colors) ? b.look.colors : []).filter(c => HEX.test(c)).slice(0, 8);
       const cid = x => /^k_[a-z0-9_]{1,24}$/.test(x || '') ? x : null;
-      cur.look = { colors: cols, anim: ['static', 'flow', 'wave', 'pulse', 'sparkle', 'breathe'].includes(b.look.anim) ? b.look.anim : 'static', logo: b.look.logo !== false, logoColor: HEX.test(b.look.logoColor || '') ? b.look.logoColor : null, hat: cid(b.look.hat), face: cid(b.look.face), wings: cid(b.look.wings), aura: cid(b.look.aura) };
+      cur.look = { colors: cols, anim: ['static', 'flow', 'wave', 'pulse', 'sparkle', 'breathe', 'scan', 'glitch', 'flicker', 'chroma', 'pingpong'].includes(b.look.anim) ? b.look.anim : 'static', logo: b.look.logo !== false, logoColor: HEX.test(b.look.logoColor || '') ? b.look.logoColor : null, hat: cid(b.look.hat), face: cid(b.look.face), wings: cid(b.look.wings), aura: cid(b.look.aura), shield: cid(b.look.shield), glint: cid(b.look.glint) };
     }
     cur.uuid = me.uuid; cur.name = me.name; cur.seen = Date.now();
     await store.set(['p', me.uuid], cur, 1000 * 60 * 60 * 24 * 60);
