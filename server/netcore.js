@@ -3,7 +3,7 @@
 // Anmeldung über den echten Minecraft-Account (Mojang "hasJoined"-Prüfung) – niemand kann sich als jemand anderes ausgeben.
 
 const isDeno = typeof Deno !== 'undefined';
-const VERSION = 16;
+const VERSION = 17;
 const MAX_IDS = 120;
 const env = k => (isDeno ? Deno.env.get(k) : typeof process !== 'undefined' ? process.env[k] : '') || '';
 // Fingerabdruck (SHA-256) des Bot-Geheimnisses aus discord-bot/.env – das Geheimnis selbst steht nirgends im Code.
@@ -666,7 +666,8 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
     if (p === '/admin/me') return json({ admin: isAdmin });
     if (!isAdmin) return fail('Kein Admin', 403);
     if (p === '/admin/online') {
-      const all = (await allPlayers(store)).filter(v => isOnline(v));
+      // Admins sehen auch Spieler, die sich auf „Unsichtbar“ gestellt haben
+      const all = (await allPlayers(store)).filter(v => v.seen && Date.now() - v.seen < 150_000);
       return json({ players: all.map(v => ({ uuid: v.uuid, name: v.name, server: v.server || null, pro: !!v.pro })).sort((a, b) => a.name.localeCompare(b.name)).slice(0, 200) });
     }
     if (p === '/admin/act' && req.method === 'POST') {
