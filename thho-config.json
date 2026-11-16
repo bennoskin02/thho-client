@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-11-16T22:21:20.306Z",
+  "updated": "2026-11-16T22:23:58.362Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -78,14 +78,14 @@
   ],
   "site": {
     "accent": "#3e7946",
-    "style": "ozean",
+    "style": "glut",
     "hero": [
       "Minecraft.",
       "Schneller.",
       "Schöner."
     ],
     "lead": "Der Launcher mit echtem Microsoft-Konto, Schnellstart, FPS-Boost, Mods mit einem Klick, Emotes und animierten Capes. Updates installieren sich von selbst.",
-    "banner": "",
+    "banner": "Die Open Beta ist da!",
     "bannerLink": "",
     "links": [
       {
