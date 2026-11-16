@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-11-16T22:17:21.344Z",
+  "updated": "2026-11-16T22:17:45.110Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -77,7 +77,7 @@
     "549203dbc8e94715c0dfe367ba761a4e9987812e13606edb10b64869e0814d3e"
   ],
   "site": {
-    "accent": "#34833e",
+    "accent": "#3e7946",
     "style": "ozean",
     "hero": [
       "Minecraft.",
