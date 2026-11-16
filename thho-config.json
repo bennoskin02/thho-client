@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-11-16T02:27:44.043Z",
+  "updated": "2026-11-16T22:17:21.344Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -75,5 +75,86 @@
     "111d476dffb077ca703eef461bd457ffdf7584ed9e218e23b04a95bbcf884e1c",
     "388bbf57077249812adda7e0e5621a8120ee27f882c9266f9b46943ccf7890b5",
     "549203dbc8e94715c0dfe367ba761a4e9987812e13606edb10b64869e0814d3e"
-  ]
+  ],
+  "site": {
+    "accent": "#34833e",
+    "style": "ozean",
+    "hero": [
+      "Minecraft.",
+      "Schneller.",
+      "Schöner."
+    ],
+    "lead": "Der Launcher mit echtem Microsoft-Konto, Schnellstart, FPS-Boost, Mods mit einem Klick, Emotes und animierten Capes. Updates installieren sich von selbst.",
+    "banner": "",
+    "bannerLink": "",
+    "links": [
+      {
+        "label": "Discord",
+        "url": "https://discord.gg/S2GWjhX2UF",
+        "nav": true
+      }
+    ],
+    "sections": {
+      "video": true,
+      "angebote": true,
+      "capes": true,
+      "pro": true,
+      "start": true,
+      "faq": true
+    },
+    "faq": [
+      [
+        "Ist der THHO Client kostenlos?",
+        "Ja. Der Client mit allen Grundfunktionen ist kostenlos. THHO Pro und Kristalle für den Shop sind freiwillig – damit holst du dir Capes, Emotes, Namensfarben und mehr."
+      ],
+      [
+        "Brauche ich Minecraft?",
+        "Ja, du meldest dich mit dem Microsoft-Konto an, mit dem du Minecraft Java Edition gekauft hast."
+      ],
+      [
+        "Ist das erlaubt auf Servern?",
+        "Der THHO Client enthält keine Cheats. PvP-Anzeigen zeigen nur Informationen, die dein Spiel ohnehin hat."
+      ],
+      [
+        "Sehen andere meine Capes und Emotes?",
+        "Ja – alle anderen Spieler mit THHO Client sehen dein Cape, deine Emotes, Namensfarbe und das THHO-Logo vor deinem Namen."
+      ],
+      [
+        "Läuft der THHO Client auf Linux?",
+        "Ja. Lade das Linux-Paket (.tar.gz), entpacke es und starte install.sh – danach findest du den THHO Client im Startmenü. Updates kommen auch unter Linux automatisch."
+      ],
+      [
+        "Gibt es den THHO Client für Mac?",
+        "Ja, für Macs mit Apple-Chip (M1 und neuer) und für ältere Intel-Macs. Zip öffnen, THHO Client in „Programme“ ziehen und beim ersten Start einmal mit Rechtsklick → Öffnen starten."
+      ],
+      [
+        "Wie bekomme ich Updates?",
+        "Automatisch: Der Client lädt neue Versionen selbst und installiert sie, sobald Minecraft geschlossen ist."
+      ]
+    ],
+    "offers": [
+      {
+        "tag": "NEU",
+        "title": "Pixel-Capes",
+        "text": "6 neue Capes zum Anziehen – kostenlos im Launcher.",
+        "img": "angebot-1.jpg",
+        "cape": "nordlicht"
+      },
+      {
+        "tag": "SHOP",
+        "title": "Phönix-Cape",
+        "text": "Animiertes Cape für 1.200 Kristalle.",
+        "img": "angebot-2.jpg",
+        "cape": "phoenix"
+      },
+      {
+        "tag": "SHOP",
+        "title": "Kosmetik-Pakete",
+        "text": "Hüte, Flügel und Auren im Set günstiger.",
+        "img": "angebot-3.jpg",
+        "cape": "blackhole"
+      }
+    ],
+    "footer": "Erstellt von der THHO Crew unterstützt durch Bennoskin."
+  }
 }
