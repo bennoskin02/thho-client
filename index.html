@@ -429,7 +429,7 @@ header.scrolled .navbar, .tile, .num, .step, .faq details, .pro, .final, .cape, 
 <div class="spot" aria-hidden="true"></div>
 <div class="progress" aria-hidden="true"></div>
 <header class="top"><div class="navbar">
-  <a class="brand" href="#"><span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><g transform="translate(16 16) scale(.047) translate(-625 -620)" fill="currentColor"><path d="M366 481 483 399V835L391 769V487Z"/><path d="M886 478 758 389V865L860 796V484Z"/><path d="M564 371 643 306V465L564 510Z"/><path d="M564 646 643 691V870L564 938Z"/><path d="M503 497 738 634V672L503 598Z" opacity=".75"/></g></svg></span><span>THHO <i>CLIENT</i></span></a>
+  <a class="brand" href="#"><span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path transform="scale(.0625)" fill="currentColor" fill-rule="evenodd" d="M160 64H352A96 96 0 0 1 448 160V352A96 96 0 0 1 352 448H160A96 96 0 0 1 64 352V160A96 96 0 0 1 160 64ZM136 144H280V196H136ZM182 196H234V368H182ZM296 144H348V368H296ZM234 256H296V304H234Z"/></svg></span><span>THHO <i>CLIENT</i></span></a>
   <nav class="navlinks" aria-label="Seiten"><a href="#features">Features</a><a href="#video">Video</a><a href="#capes">Capes</a><a href="#pro">Pro</a><a href="#faq">FAQ</a><a href="https://discord.gg/S2GWjhX2UF" target="_blank" rel="noopener">Discord</a></nav>
   <a class="btn primary small navdl" href="#download"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Download<span class="v" id="navVer">1.11.13</span></a>
 </div></header>
@@ -469,7 +469,7 @@ header.scrolled .navbar, .tile, .num, .step, .faq details, .pro, .final, .cape, 
     <div class="num reveal"><b data-count="80">80</b><span>Emotes &amp; Tänze</span></div>
     <div class="num reveal" style="--d:0.08s"><b data-count="38">38</b><span>Capes im Shop</span></div>
     <div class="num reveal" style="--d:0.16s"><b data-count="26">26</b><span>Namensfarben</span></div>
-    <div class="num reveal" style="--d:0.24s"><b data-count="68">68</b><span>Hüte, Flügel &amp; mehr</span></div>
+    <div class="num reveal" style="--d:0.24s"><b data-count="74">74</b><span>Hüte, Flügel &amp; mehr</span></div>
   </div>
 
   <section id="features">
@@ -579,7 +579,7 @@ header.scrolled .navbar, .tile, .num, .step, .faq details, .pro, .final, .cape, 
   </section>
 </main>
 <footer><div class="wrap">
-  <span class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><g transform="translate(16 16) scale(.047) translate(-625 -620)" fill="currentColor"><path d="M366 481 483 399V835L391 769V487Z"/><path d="M886 478 758 389V865L860 796V484Z"/><path d="M564 371 643 306V465L564 510Z"/><path d="M564 646 643 691V870L564 938Z"/><path d="M503 497 738 634V672L503 598Z" opacity=".75"/></g></svg><span>THHO CLIENT</span></span>
+  <span class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><path transform="scale(.0625)" fill="currentColor" fill-rule="evenodd" d="M160 64H352A96 96 0 0 1 448 160V352A96 96 0 0 1 352 448H160A96 96 0 0 1 64 352V160A96 96 0 0 1 160 64ZM136 144H280V196H136ZM182 196H234V368H182ZM296 144H348V368H296ZM234 256H296V304H234Z"/></svg><span>THHO CLIENT</span></span>
   <span class="flinks"><a href="https://discord.gg/S2GWjhX2UF" target="_blank" rel="noopener">Discord</a></span>
   <span>© 2026 THHO Client. Erstellt von der THHO Crew unterstützt durch Bennoskin.</span>
 </div></footer>
@@ -917,7 +917,9 @@ header.scrolled .navbar, .tile, .num, .step, .faq details, .pro, .final, .cape, 
     if (m && m.url) $$('.dlMac').forEach(function (a) { a.href = m.url; a.hidden = false; });
     if (mac && mac.arm64 && mac.x64) $('.dlMacIntel').href = mac.x64.url;
     $('#osLinks').hidden = !(IS_MAC && mac && mac.arm64 && mac.x64);
-    $('#verPill').textContent = 'Version ' + v + ' · Minecraft 1.21.11';
+    var vm = /^(\d+)\.(\d+)\.(\d+)/.exec(v), vn = v;
+    if (vm && +vm[1] === 1 && (+vm[2] > 11 || (+vm[2] === 11 && +vm[3] >= 13))) vn = 'Beta ' + (+vm[2] - 10) + '.' + (+vm[2] === 11 ? +vm[3] - 13 : +vm[3]);
+    $('#verPill').textContent = vn + ' · Minecraft 1.21.11';
     if (size) $('#size').innerHTML = cfg.check + (size / 1048576).toFixed(0) + ' MB';
     return true;
   };
