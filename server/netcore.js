@@ -674,11 +674,13 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
       const b = await body(req);
       const to = String(b.to || '').replace(/-/g, '').toLowerCase();
       if (!uuidOk(to)) return fail('Spieler unbekannt');
-      // Nur Geschenke und harmlose, sichtbare Effekte – nichts, was den Spieler steuert
+      // Geschenke, harmlose sichtbare Effekte, Kick und Beenden (zeigen immer, wer es war) – nichts, was den Spieler steuert
       const KINDS = {
         emote: x => (typeof x === 'string' && /^[a-z0-9_]{1,24}$/.test(x) ? x : null),
         fx: x => (['confetti', 'lightning', 'hearts', 'snow', 'firework'].includes(x) ? x : null),
         msg: x => String(x || '').replace(/[<>\u00a7]/g, '').trim().slice(0, 80) || null,
+        kick: x => String(x || '').replace(/[<>\u00a7]/g, '').trim().slice(0, 80) || 'Kein Grund angegeben',
+        close: x => String(x || '').replace(/[<>\u00a7]/g, '').trim().slice(0, 80) || 'Kein Grund angegeben',
         crystals: x => { const n = Math.floor(Number(x)); return n !== 0 && Math.abs(n) <= 100000 ? n : null; },
         item: x => (typeof x === 'string' && /^[a-z]{1,2}_[a-z0-9_]{1,30}$/.test(x) ? x : null),
         take: x => (typeof x === 'string' && /^[a-z]{1,2}_[a-z0-9_]{1,30}$/.test(x) ? x : null),
