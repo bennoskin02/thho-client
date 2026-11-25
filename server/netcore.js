@@ -82,6 +82,10 @@ const uuidOk = u => /^[0-9a-f]{32}$/.test(u);
 const idOk = s => s === null || (typeof s === 'string' && /^[a-z0-9_-]{1,40}$/.test(s));
 const randomToken = () => [...crypto.getRandomValues(new Uint8Array(24))].map(b => b.toString(16).padStart(2, '0')).join('');
 async function body(req) { try { const t = await req.text(); return t.length > 8000 ? {} : JSON.parse(t || '{}'); } catch { return {}; } }
+async function sha256hex(t) { return [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)))].map(b => b.toString(16).padStart(2, '0')).join(''); }
+function clientIp(req) { const h = req.headers; return (h.get('cf-connecting-ip') || h.get('x-forwarded-for') || h.get('x-real-ip') || '').split(',')[0].trim(); }
+/** IP als kurzes Kürzel (Hash) – nur zum Erkennen von Bann-Umgehung, die echte IP wird nie gespeichert. */
+async function ipTag(req) { const ip = clientIp(req); return ip ? ('ip_' + (await sha256hex('thho-ip|' + ip)).slice(0, 32)) : ''; }
 
 async function who(req) {
   const a = req.headers.get('authorization') || '';
@@ -221,6 +225,7 @@ async function handle(req) {
     const token = randomToken();
     await store.set(['tok', token], { uuid: prof.id, name: prof.name }, 1000 * 60 * 60 * 24 * 30);
     await store.set(['name', prof.name.toLowerCase()], { uuid: prof.id, name: prof.name });
+    { const tag = await ipTag(req); if (tag) await store.set(['ip', prof.id], tag, 1000 * 60 * 60 * 24 * 60); }
     return json({ token, uuid: prof.id, name: prof.name });
   }
 
@@ -248,6 +253,20 @@ async function handle(req) {
     await store.set(['p', me.uuid], cur, 1000 * 60 * 60 * 24 * 60);
     await store.set(['name', me.name.toLowerCase()], { uuid: me.uuid, name: me.name });
     return json({ ok: true });
+  }
+
+  // Bann-Abfrage: Darf dieses Konto (oder diese IP) über den THHO-Launcher spielen?
+  if (p === '/banstatus') {
+    const me = await who(req);
+    if (!me) return fail('Bitte neu anmelden', 401);
+    const tag = await ipTag(req);
+    if (tag) await store.set(['ip', me.uuid], tag, 1000 * 60 * 60 * 24 * 60);
+    const now = Date.now();
+    let until = 0, reason = '';
+    const ban = await store.get(['ban', me.uuid]);
+    if (ban && ban.until > now) { until = ban.until; reason = ban.reason || ''; }
+    if (!until && tag) { const bip = await store.get(['banip', tag]); if (bip && bip.until > now) { until = bip.until; reason = bip.reason || ''; } }
+    return json({ banned: until > now, until, reason });
   }
 
   // Abfrage für Spieler in der Nähe: { ids: [uuid ohne Striche, …] }
@@ -694,6 +713,38 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
       box.push({ id: randomToken().slice(0, 12), from: me.name, kind: b.kind, arg, at: Date.now() });
       await store.set(['inbox', to], box.slice(-30), 1000 * 60 * 60 * 24 * 7);
       return json({ ok: true });
+    }
+    if (p === '/admin/ban' && req.method === 'POST') {
+      const b = await body(req);
+      const to = String(b.to || '').replace(/-/g, '').toLowerCase();
+      if (!uuidOk(to)) return fail('Spieler unbekannt');
+      const mins = Math.floor(Number(b.minutes));
+      const reason = String(b.reason || '').replace(/[<>\u00a7]/g, '').trim().slice(0, 80) || 'Kein Grund angegeben';
+      const until = mins > 0 && mins <= 1440 * 366 ? Date.now() + mins * 60000 : mins === 0 ? Date.now() + 100 * 365 * 86400000 : 0;
+      if (!until) return fail('Ungültige Dauer');
+      const prof = (await store.get(['p', to])) || {};
+      const ipTagV = await store.get(['ip', to]);
+      const rec = { uuid: to, until, reason, by: me.name, at: Date.now(), name: prof.name || String(b.name || ''), ip: ipTagV || '' };
+      await store.set(['ban', to], rec, until - Date.now());
+      if (ipTagV) await store.set(['banip', ipTagV], { until, uuid: to, reason }, until - Date.now());
+      // Falls gerade online: Spiel sofort schließen.
+      const box = (await store.get(['inbox', to])) || [];
+      box.push({ id: randomToken().slice(0, 12), from: me.name, kind: 'close', arg: 'Gebannt: ' + reason, at: Date.now() });
+      await store.set(['inbox', to], box.slice(-30), 1000 * 60 * 60 * 24 * 7);
+      return json({ ok: true, until });
+    }
+    if (p === '/admin/unban' && req.method === 'POST') {
+      const to = String((await body(req)).to || '').replace(/-/g, '').toLowerCase();
+      if (!uuidOk(to)) return fail('Spieler unbekannt');
+      const rec = await store.get(['ban', to]);
+      await store.set(['ban', to], { until: 0 }, 1000);
+      if (rec && rec.ip) await store.set(['banip', rec.ip], { until: 0 }, 1000);
+      return json({ ok: true });
+    }
+    if (p === '/admin/bans') {
+      const now = Date.now();
+      const all = await store.list(['ban']);
+      return json({ bans: all.filter(v => v && v.until > now).map(v => ({ uuid: v.uuid || '', name: v.name || '', until: v.until, reason: v.reason || '', by: v.by || '' })).sort((a, b) => b.until - a.until).slice(0, 200) });
     }
     return fail('Unbekannte Admin-Aktion', 404);
   }
