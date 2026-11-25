@@ -3,7 +3,7 @@
 // Anmeldung über den echten Minecraft-Account (Mojang "hasJoined"-Prüfung) – niemand kann sich als jemand anderes ausgeben.
 
 const isDeno = typeof Deno !== 'undefined';
-const VERSION = 17;
+const VERSION = 18;
 const MAX_IDS = 120;
 const env = k => (isDeno ? Deno.env.get(k) : typeof process !== 'undefined' ? process.env[k] : '') || '';
 // Fingerabdruck (SHA-256) des Bot-Geheimnisses aus discord-bot/.env – das Geheimnis selbst steht nirgends im Code.
