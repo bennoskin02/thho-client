@@ -3,7 +3,7 @@
 // Anmeldung über den echten Minecraft-Account (Mojang "hasJoined"-Prüfung) – niemand kann sich als jemand anderes ausgeben.
 
 const isDeno = typeof Deno !== 'undefined';
-const VERSION = 18;
+const VERSION = 19;
 const MAX_IDS = 120;
 const env = k => (isDeno ? Deno.env.get(k) : typeof process !== 'undefined' ? process.env[k] : '') || '';
 // Fingerabdruck (SHA-256) des Bot-Geheimnisses aus discord-bot/.env – das Geheimnis selbst steht nirgends im Code.
@@ -746,6 +746,16 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
       const all = await store.list(['ban']);
       return json({ bans: all.filter(v => v && v.until > now).map(v => ({ uuid: v.uuid || '', name: v.name || '', until: v.until, reason: v.reason || '', by: v.by || '' })).sort((a, b) => b.until - a.until).slice(0, 200) });
     }
+    if (p === '/admin/announce' && req.method === 'POST') {
+      const b = await body(req);
+      const text = String(b.text || '').replace(/[<>\u00a7]/g, '').trim().slice(0, 200);
+      if (!text) return fail('Leere Ansage');
+      const title = String(b.title || '').replace(/[<>\u00a7]/g, '').trim().slice(0, 40);
+      const secs = Math.max(5, Math.min(600, Math.floor(Number(b.seconds)) || 120));
+      const rec = { id: randomToken().slice(0, 12), text, title, by: me.name, at: Date.now(), until: Date.now() + secs * 1000 };
+      await store.set(['announce'], rec, secs * 1000);
+      return json({ ok: true, id: rec.id });
+    }
     return fail('Unbekannte Admin-Aktion', 404);
   }
   // Pro, das ein Admin vergeben oder entzogen hat (null = nichts festgelegt)
@@ -761,7 +771,9 @@ System des Nutzers: Launcher ${String(c.launcher || '?').slice(0, 12)}, ${String
     if (!me) return fail('Bitte neu anmelden', 401);
     const box = (await store.get(['inbox', me.uuid])) || [];
     if (box.length) await store.set(['inbox', me.uuid], [], 1000);
-    return json({ items: box });
+    const an = await store.get(['announce']);
+    const announce = an && an.until > Date.now() ? { id: an.id, text: an.text, title: an.title || '', from: an.by || '' } : null;
+    return json({ items: box, announce });
   }
 
   return fail('Nicht gefunden', 404);
