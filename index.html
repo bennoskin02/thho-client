@@ -111,6 +111,21 @@ header.scrolled .navbar { background: rgba(22,10,36,.72); border-color: var(--li
 .js .load { opacity: 0; transform: translateY(20px); transition: opacity .9s var(--ease), transform .9s var(--ease); transition-delay: var(--d, 0s); }
 .loaded .load { opacity: 1; transform: none; }
 
+/* Karten-Karussell (Startbereich) */
+.deck { position: relative; display: flex; align-items: center; justify-content: center; min-height: 440px; padding: 10px 20px 20px 0; }
+.deck-cards { position: relative; width: min(560px, 94%); aspect-ratio: 1000 / 623; }
+.dcard { position: absolute; inset: 0; margin: 0; border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); background: #0e0e12;
+  box-shadow: 0 44px 100px -36px rgba(0,0,0,.9); transition: transform .8s var(--ease), opacity .8s var(--ease); }
+.dcard img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+.dcard .dtag { position: absolute; left: 12px; bottom: 12px; font-size: 12px; font-weight: 700; letter-spacing: .05em; padding: 4px 11px; border-radius: 99px; background: rgba(10,10,14,.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.dcard[data-p="0"] { transform: none; z-index: 3; opacity: 1; }
+.dcard[data-p="1"] { transform: translate(30px, 24px) scale(.93) rotate(3deg); z-index: 2; opacity: .82; }
+.dcard[data-p="2"] { transform: translate(56px, 46px) scale(.86) rotate(6deg); z-index: 1; opacity: .5; }
+.chip-deck { position: absolute; left: -4px; top: 16%; z-index: 4; }
+.ddots { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 5; }
+.ddots button { width: 9px; height: 9px; border-radius: 50%; border: 0; padding: 0; background: rgba(255,255,255,.28); cursor: pointer; transition: width .3s, background .3s; }
+.ddots button.on { background: var(--a); width: 22px; border-radius: 99px; }
+@media (max-width: 920px) { .deck { min-height: 320px; padding: 0; } .chip-deck { display: none; } }
 /* Launcher-Vorschau in 3D, folgt der Maus */
 .stage { perspective: 1400px; padding: 30px 30px 40px 10px; }
 .tilt { position: relative; transform-style: preserve-3d; transform: rotateY(-8deg) rotateX(4deg); transition: transform .7s var(--ease); }
@@ -442,16 +457,14 @@ header.scrolled .navbar, .tile, .num, .step, .faq details, .pro, .final, .cape, 
       <div class="oslinks" id="osLinks" hidden>Älterer Mac mit Intel-Chip? <a class="dlMacIntel" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-1.11.13-mac-x64.zip">Intel-Version laden</a></div>
       <div class="checks load" style="--d:0.85s"><span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Kostenlos</span><span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Windows · Linux · Mac</span><span id="size"></span></div>
     </div>
-    <div class="stage load" style="--d:0.35s">
-      <div class="tilt"><div class="float">
-        <div class="mock" aria-hidden="true">
-          <div class="bar"><span class="dots"><i></i><i></i><i></i></span>THHO CLIENT<span class="pro">PRO</span></div>
-          <div class="side"><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="main"><div class="t1">THHO <b>CLIENT</b></div><div class="t2"></div><div class="t2" style="width:34%"></div><div class="play">SPIELEN</div><div class="tiles"><div></div><div></div><div></div></div></div>
-        </div>
-        <div class="chip"><span class="dot"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span><span>FPS-Boost aktiv<small>Sodium · Lithium</small></span></div>
-        <div class="phone" aria-hidden="true"><canvas data-art="galaxy" width="180" height="288"></canvas></div>
-      </div></div>
+    <div class="deck load" style="--d:0.35s">
+      <div class="deck-cards" id="deck">
+        <figure class="dcard"><img src="hero-start.jpg" alt="THHO Client – Startseite" loading="eager"><span class="dtag">Start</span></figure>
+        <figure class="dcard"><img src="hero-versionen.jpg" alt="THHO Client – Versionen"><span class="dtag">Versionen</span></figure>
+        <figure class="dcard"><img src="hero-freunde.jpg" alt="THHO Client – Freunde"><span class="dtag">Freunde</span></figure>
+      </div>
+      <div class="chip chip-deck"><span class="dot"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span><span>FPS-Boost aktiv<small>Sodium · Lithium</small></span></div>
+      <div class="ddots" id="deckDots" role="tablist" aria-label="Vorschau wechseln"></div>
     </div>
   </section>
 </main>
@@ -497,11 +510,11 @@ header.scrolled .navbar, .tile, .num, .step, .faq details, .pro, .final, .cape, 
   <section id="angebote">
     <div class="head reveal"><h2>Neu im Shop</h2><p>Aktuelle Angebote – alles direkt im Launcher.</p></div>
     <div class="offers">
-      <a class="offer reveal" style="--d:0.00s" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-Setup-1.11.13.exe"><div class="pic"><span class="tag">NEU</span><canvas data-cape="nordlicht" width="200" height="320" role="img" aria-label="Pixel-Capes"></canvas></div>
+      <a class="offer reveal" style="--d:0.00s" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-Setup-1.11.13.exe"><div class="pic"><span class="tag">NEU</span><canvas data-cape="nordlicht" data-capeimg="cape-nordlicht.png" width="200" height="320" role="img" aria-label="Pixel-Capes"></canvas></div>
         <div class="txt"><h3>Pixel-Capes</h3><p>6 neue Capes zum Anziehen – kostenlos im Launcher.</p></div></a>
-      <a class="offer reveal" style="--d:0.06s" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-Setup-1.11.13.exe"><div class="pic"><span class="tag">SHOP</span><canvas data-cape="phoenix" width="200" height="320" role="img" aria-label="Phönix-Cape"></canvas></div>
+      <a class="offer reveal" style="--d:0.06s" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-Setup-1.11.13.exe"><div class="pic"><span class="tag">SHOP</span><canvas data-cape="sakura" data-capeimg="cape-sakura.png" width="200" height="320" role="img" aria-label="Phönix-Cape"></canvas></div>
         <div class="txt"><h3>Phönix-Cape</h3><p>Animiertes Cape für 1.200 Kristalle.</p></div></a>
-      <a class="offer reveal" style="--d:0.12s" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-Setup-1.11.13.exe"><div class="pic"><span class="tag">SHOP</span><canvas data-cape="blackhole" width="200" height="320" role="img" aria-label="Kosmetik-Pakete"></canvas></div>
+      <a class="offer reveal" style="--d:0.12s" href="https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-Setup-1.11.13.exe"><div class="pic"><span class="tag">SHOP</span><canvas data-cape="blackhole" data-capeimg="cape-blackhole.png" width="200" height="320" role="img" aria-label="Kosmetik-Pakete"></canvas></div>
         <div class="txt"><h3>Kosmetik-Pakete</h3><p>Hüte, Flügel und Auren im Set günstiger.</p></div></a>
     </div>
   </section>
@@ -512,27 +525,27 @@ header.scrolled .navbar, .tile, .num, .step, .faq details, .pro, .final, .cape, 
     </div>
     <div class="capes">
       <figure class="cape reveal" style="--d:0.00s;--glow:rgba(34,211,238,.6)">
-        <div class="rod"></div><canvas data-cape="nordlicht" width="200" height="320" role="img" aria-label="Nordlicht-Cape"></canvas>
+        <div class="rod"></div><canvas data-cape="nordlicht" data-capeimg="cape-nordlicht.png" width="200" height="320" role="img" aria-label="Nordlicht-Cape"></canvas>
         <figcaption><span>Nordlicht</span><span class="price"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M12 21 8 9l4-6 4 6z"/></svg>950</span></figcaption>
       </figure>
       <figure class="cape reveal" style="--d:0.06s;--glow:rgba(249,115,22,.65)">
-        <div class="rod"></div><canvas data-cape="phoenix" width="200" height="320" role="img" aria-label="Phönix-Cape"></canvas>
-        <figcaption><span>Phönix</span><span class="price"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M12 21 8 9l4-6 4 6z"/></svg>1200</span></figcaption>
+        <div class="rod"></div><canvas data-cape="sakura" data-capeimg="cape-sakura.png" width="200" height="320" role="img" aria-label="Sakura-Cape"></canvas>
+        <figcaption><span>Sakura</span><span class="price"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M12 21 8 9l4-6 4 6z"/></svg>300</span></figcaption>
       </figure>
       <figure class="cape reveal" style="--d:0.12s;--glow:rgba(251,146,60,.5)">
-        <div class="rod"></div><canvas data-cape="blackhole" width="200" height="320" role="img" aria-label="Schwarzes-Loch-Cape"></canvas>
+        <div class="rod"></div><canvas data-cape="blackhole" data-capeimg="cape-blackhole.png" width="200" height="320" role="img" aria-label="Schwarzes-Loch-Cape"></canvas>
         <figcaption><span>Schwarzes-Loch</span><span class="price"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M12 21 8 9l4-6 4 6z"/></svg>1100</span></figcaption>
       </figure>
       <figure class="cape reveal" style="--d:0.18s;--glow:rgba(56,189,248,.65)">
-        <div class="rod"></div><canvas data-cape="endportal" width="200" height="320" role="img" aria-label="Endportal-Cape"></canvas>
+        <div class="rod"></div><canvas data-cape="endportal" data-capeimg="cape-endportal.png" width="200" height="320" role="img" aria-label="Endportal-Cape"></canvas>
         <figcaption><span>Endportal</span><span class="price"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M12 21 8 9l4-6 4 6z"/></svg>1000</span></figcaption>
       </figure>
       <figure class="cape reveal" style="--d:0.24s;--glow:rgba(45,212,191,.55)">
-        <div class="rod"></div><canvas data-cape="gewitter" width="200" height="320" role="img" aria-label="Gewitter-Cape"></canvas>
+        <div class="rod"></div><canvas data-cape="gewitter" data-capeimg="cape-gewitter.png" width="200" height="320" role="img" aria-label="Gewitter-Cape"></canvas>
         <figcaption><span>Gewitter</span><span class="price"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M12 21 8 9l4-6 4 6z"/></svg>900</span></figcaption>
       </figure>
       <figure class="cape reveal" style="--d:0.30s;--glow:rgba(253,224,71,.5)">
-        <div class="rod"></div><canvas data-cape="abendrot" width="200" height="320" role="img" aria-label="Abendrot-Cape"></canvas>
+        <div class="rod"></div><canvas data-cape="abendrot" data-capeimg="cape-abendrot.png" width="200" height="320" role="img" aria-label="Abendrot-Cape"></canvas>
         <figcaption><span>Abendrot</span><span class="price"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M12 21 8 9l4-6 4 6z"/></svg>800</span></figcaption>
       </figure>
     </div>
@@ -862,21 +875,45 @@ header.scrolled .navbar, .tile, .num, .step, .faq details, .pro, .final, .cape, 
     requestAnimationFrame(draw);
   })();
 
+  (function deck() {
+    var d = document.getElementById('deck'); if (!d) return;
+    var cards = [].slice.call(d.children), dots = document.getElementById('deckDots'), front = 0, timer;
+    function apply() {
+      cards.forEach(function (c, i) { c.setAttribute('data-p', (i - front + cards.length) % cards.length); });
+      if (dots) [].slice.call(dots.children).forEach(function (b, i) { b.className = i === front ? 'on' : ''; });
+    }
+    function rearm() { clearInterval(timer); if (!RM) timer = setInterval(function () { front = (front + 1) % cards.length; apply(); }, 3500); }
+    if (dots) cards.forEach(function (c, i) { var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Vorschau ' + (i + 1)); b.onclick = function () { front = i; apply(); rearm(); }; dots.appendChild(b); });
+    d.addEventListener('click', function () { front = (front + 1) % cards.length; apply(); rearm(); });
+    apply(); rearm();
+  })();
+
   (function capes() {
     var cvs = $$('canvas[data-cape]'); if (!cvs.length) return;
     var CW = 100, CH = 160, items = cvs.map(function (c) {
       var off = document.createElement('canvas'); off.width = CW; off.height = CH;
       c.width = CW * 2; c.height = CH * 2;
-      return { c: c, x: c.getContext('2d'), off: off, ox: off.getContext('2d'), art: ART[c.dataset.cape], vis: true, ph: Math.random() * 10 };
+      var it = { c: c, x: c.getContext('2d'), off: off, ox: off.getContext('2d'), art: ART[c.dataset.cape], imgReady: false, vis: true, ph: Math.random() * 10 };
+      // Scharfes Cape-Bild (hohe Auflösung) laden und als Stoff-Textur nehmen – darauf läuft der Weh-Effekt
+      if (c.dataset.capeimg) {
+        var im = new Image();
+        im.onload = function () { it.ox.clearRect(0, 0, CW, CH); it.ox.imageSmoothingEnabled = false; it.ox.drawImage(im, 0, 0, CW, CH); it.imgReady = true; };
+        im.src = c.dataset.capeimg;
+        it.useImg = true;
+      }
+      return it;
     });
     if (io) {
       var vo = new IntersectionObserver(function (l) { l.forEach(function (e) { items.forEach(function (it) { if (it.c === e.target) it.vis = e.isIntersecting; }); }); });
       items.forEach(function (it) { vo.observe(it.c); });
     }
     var draw = function (it, now) {
-      if (!it.art) return;
-      var t = ((now / 1000 + it.ph) % 4) / 4; // 4 Sekunden pro Durchlauf
-      it.ox.clearRect(0, 0, CW, CH); it.art(it.ox, CW, CH, t);
+      if (it.useImg) { if (!it.imgReady) return; } // Bild schon in der Offscreen-Textur
+      else {
+        if (!it.art) return;
+        var t = ((now / 1000 + it.ph) % 4) / 4; // 4 Sekunden pro Durchlauf
+        it.ox.clearRect(0, 0, CW, CH); it.art(it.ox, CW, CH, t);
+      }
       var x = it.x, W = it.c.width, H = it.c.height, sx = W / CW;
       x.clearRect(0, 0, W, H);
       // Stoff: oben fest, unten weht er – Zeilen werden verschoben und schattiert
