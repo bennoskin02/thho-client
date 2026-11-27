@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-11-27T14:08:13.065Z",
+  "updated": "2026-11-27T15:56:33.711Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -11,26 +11,12 @@
   "price": "5",
   "news": "",
   "latest": {
-    "version": "1.11.13",
-    "tag": "v1.11.13",
-    "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-Setup-1.11.13.exe",
-    "size": 115025953,
-    "notes": "**Neues Logo, Handy-Menü und neue Sachen**\n\n- Welten direkt aus dem Launcher starten und sichern – und auf der Startseite mit einem Klick weiterspielen\n- Neues THHO-Logo überall – im Spiel jetzt größer und gut erkennbar vor dem Namen\n- Neues Handy-Menü im Spiel mit Apps und Schnellschaltern\n- Neue Anzeigen im Spiel: Todespunkt, Nether-Rechner, Strecke, Wegpunkt mit Pfeil, Spieler-Radar und FPS-Verlauf\n- Nacht-Hinweis: sagt Bescheid, wenn du schlafen kannst\n- Neue Capes: Amethyst-Höhle und Vulkan\n- Neue Emotes: Angeln, Trinken und Schleich-Lauf\n- Versionen haben ein Zahnrad-Menü für Mods, Ressourcenpakete, Shader und Welten\n- Admin-Menü: Spieler kicken oder ihr Spiel beenden (mit Grund)\n- Admin-Menü: Spieler für eine Zeit oder dauerhaft im THHO Client sperren (Konto + IP gegen Umgehung) und wieder entsperren\n- Launcher-Admin: Spieler sperren und entsperren (auch im Spiel) – Konto und IP\n- Updates kommen automatisch im Launcher an (Herunterladen, Installieren, „Was ist neu“) – kein Browser mehr nötig\n- Live-Ansagen an alle Spieler (Desktop-Tool „Ansage-an-alle“)",
-    "date": "2026-11-27T13:58:07.046Z",
-    "linux": {
-      "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-1.11.13-linux.tar.gz",
-      "size": 137825363
-    },
-    "mac": {
-      "arm64": {
-        "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-1.11.13-mac-arm64.zip",
-        "size": 130678183
-      },
-      "x64": {
-        "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.13/THHO-Client-1.11.13-mac-x64.zip",
-        "size": 135802529
-      }
-    }
+    "version": "1.11.14",
+    "tag": "v1.11.14",
+    "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.14/THHO-Client-Setup-1.11.14.exe",
+    "size": 121200354,
+    "notes": "**Beta 1.1 – neue Website & Feinschliff**\n\n- Komplett neue Website im THHO-Stil: neue Startbilder, gleiche Schrift wie im Launcher, ohne „KI-Look“\n- Shop- und Cape-Vorschauen schärfer\n- Kleine Verbesserungen und Fehlerbehebungen",
+    "date": "2026-11-27T15:56:32.495Z"
   },
   "crystalCodes": {
     "164df1cef245a17c7ef9db8fb7c97f4f61c376c2efd49e709b7f24f86537c2f0": 3000,
