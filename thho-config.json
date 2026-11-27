@@ -1,6 +1,6 @@
 {
   "created": "2026-10-20T01:38:25.019Z",
-  "updated": "2026-11-27T15:56:33.711Z",
+  "updated": "2026-11-27T16:10:17.445Z",
   "creators": [
     {
       "code": "Bennoskin",
@@ -16,7 +16,21 @@
     "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.14/THHO-Client-Setup-1.11.14.exe",
     "size": 121200354,
     "notes": "**Beta 1.1 – neue Website & Feinschliff**\n\n- Komplett neue Website im THHO-Stil: neue Startbilder, gleiche Schrift wie im Launcher, ohne „KI-Look“\n- Shop- und Cape-Vorschauen schärfer\n- Kleine Verbesserungen und Fehlerbehebungen",
-    "date": "2026-11-27T15:56:32.495Z"
+    "date": "2026-11-27T15:44:38.600Z",
+    "linux": {
+      "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.14/THHO-Client-1.11.14-linux.tar.gz",
+      "size": 143996251
+    },
+    "mac": {
+      "arm64": {
+        "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.14/THHO-Client-1.11.14-mac-arm64.zip",
+        "size": 136853365
+      },
+      "x64": {
+        "url": "https://github.com/bennoskin02/thho-client/releases/download/v1.11.14/THHO-Client-1.11.14-mac-x64.zip",
+        "size": 141977711
+      }
+    }
   },
   "crystalCodes": {
     "164df1cef245a17c7ef9db8fb7c97f4f61c376c2efd49e709b7f24f86537c2f0": 3000,
