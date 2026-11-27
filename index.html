@@ -24,7 +24,7 @@
 .sitebanner { display: block; position: relative; z-index: 5; margin: 74px auto -50px; width: min(1100px, calc(100% - 32px)); padding: 10px 16px; border-radius: 12px; text-align: center; font-weight: 600; color: #fff; text-decoration: none; background: color-mix(in srgb, var(--a) 35%, transparent); border: 1px solid color-mix(in srgb, var(--a) 60%, transparent); }
 footer .flinks { display: flex; gap: 14px; flex-wrap: wrap; } footer .flinks a { color: var(--muted); text-decoration: none; } footer .flinks a:hover { color: var(--text); }
 html { scroll-behavior: smooth; background: var(--void); }
-body { margin: 0; color: var(--text); font-family: Poppins, "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "SF Pro Display", Roboto, "Helvetica Neue", sans-serif;
+body { margin: 0; color: var(--text); font-family: "Comic Sans MS", "Comic Neue", Poppins, "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
   line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; background: transparent; }
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--diamond); outline-offset: 3px; border-radius: 12px; }
@@ -32,12 +32,8 @@ a { color: inherit; }
 .wrap { max-width: 1180px; margin: 0 auto; padding: 0 22px; }
 
 /* ===== bewegter Hintergrund: Polarlicht + schwebende Blöcke ===== */
-.sky { position: fixed; inset: 0; z-index: -4; overflow: hidden; background: radial-gradient(90% 70% at 15% 0%, color-mix(in srgb, var(--a) 30%, #1a0a2e) 0%, #160a2a 45%, var(--void) 80%); }
-.sky i { position: absolute; border-radius: 50%; filter: blur(90px); mix-blend-mode: screen; opacity: .55; will-change: transform; }
-.sky i:nth-child(1) { width: 60vmax; height: 60vmax; left: -15vmax; top: -25vmax; background: radial-gradient(circle, var(--a), transparent 65%); animation: a1 26s ease-in-out infinite alternate; }
-.sky i:nth-child(2) { width: 55vmax; height: 55vmax; right: -20vmax; top: -10vmax; background: radial-gradient(circle, #7c3aed, transparent 65%); animation: a2 31s ease-in-out infinite alternate; opacity: .45; }
-.sky i:nth-child(3) { width: 50vmax; height: 50vmax; left: 20vmax; top: 35vh; background: radial-gradient(circle, #ec4899, transparent 65%); animation: a3 28s ease-in-out infinite alternate; opacity: .32; }
-.sky i:nth-child(4) { width: 45vmax; height: 45vmax; left: -10vmax; bottom: -20vmax; background: radial-gradient(circle, #4f46e5, transparent 65%); animation: a4 34s ease-in-out infinite alternate; opacity: .3; }
+.sky { position: fixed; inset: 0; z-index: -4; overflow: hidden; background: var(--void); }
+.sky i { display: none; }
 @keyframes a1 { to { transform: translate3d(22vw, 18vh, 0) scale(1.15); } }
 @keyframes a2 { to { transform: translate3d(-26vw, 26vh, 0) scale(.9); } }
 @keyframes a3 { to { transform: translate3d(-18vw, -22vh, 0) scale(1.2); } }
@@ -46,9 +42,9 @@ a { color: inherit; }
 .grain { position: fixed; inset: -50%; z-index: -1; pointer-events: none; opacity: .07; animation: grain 1.2s steps(4) infinite;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 @keyframes grain { 0% { transform: translate(0,0); } 25% { transform: translate(-3%,2%); } 50% { transform: translate(2%,-3%); } 75% { transform: translate(-2%,-1%); } }
-.spot { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(520px circle at var(--mx, 50%) var(--my, -20%), rgba(167,139,250,.13), transparent 60%); transition: background .2s; }
+.spot { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(520px circle at var(--mx, 50%) var(--my, -20%), rgba(255,255,255,.05), transparent 60%); transition: background .2s; }
 .progress { position: fixed; left: 0; top: 0; right: 0; height: 3px; z-index: 50; transform-origin: 0 50%; transform: scaleX(0);
-  background: linear-gradient(90deg, var(--emerald), var(--diamond), var(--portal), var(--rose), var(--gold)); }
+  background: var(--a); }
 
 /* ===== Navigation ===== */
 header.top { position: fixed; left: 0; right: 0; top: 0; z-index: 40; padding: 14px 16px 0; transition: padding .4s var(--ease); }
@@ -73,9 +69,8 @@ header.scrolled .navbar { background: rgba(22,10,36,.72); border-color: var(--li
   text-decoration: none; color: var(--text); border: 0; cursor: pointer; isolation: isolate; transition: transform .35s var(--spring), box-shadow .35s, background .3s; }
 .btn svg { width: 18px; height: 18px; flex: none; }
 .btn:active { transform: scale(.96) !important; }
-.btn.primary { color: #fff; background: linear-gradient(135deg, color-mix(in oklab, var(--a) 85%, white), var(--a) 45%, color-mix(in oklab, var(--a) 55%, #7c3aed));
-  box-shadow: 0 12px 36px -8px color-mix(in srgb, var(--a) 85%, transparent), inset 0 1px 0 rgba(255,255,255,.3); }
-.btn.primary:hover { box-shadow: 0 16px 48px -6px color-mix(in srgb, var(--a) 95%, transparent), inset 0 1px 0 rgba(255,255,255,.3); }
+.btn.primary { color: #0a0a0a; background: var(--a); }
+.btn.primary:hover { filter: brightness(1.08); }
 .btn.ghost { background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); }
 .btn.ghost:hover { background: rgba(255,255,255,.11); box-shadow: inset 0 0 0 1px rgba(255,255,255,.24); }
 .btn.small { padding: 10px 18px; font-size: 14px; }
@@ -101,8 +96,7 @@ header.scrolled .navbar { background: rgba(22,10,36,.72); border-color: var(--li
 .hero h1 { font-size: clamp(48px, 6.6vw, 92px); line-height: 1; letter-spacing: -.035em; margin: 26px 0 0; font-weight: 700; }
 .hero h1 .ln { display: block; overflow: hidden; padding-bottom: .06em; }
 .hero h1 .ln > span { display: inline-block; }
-.hero h1 .g > span { background: linear-gradient(90deg, color-mix(in oklab, var(--a) 80%, white), var(--a) 40%, color-mix(in oklab, var(--a) 50%, #a855f7) 75%, color-mix(in oklab, var(--a) 80%, white));
-  background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: flow 7s ease-in-out infinite alternate; }
+.hero h1 .g > span { color: var(--text); }
 .js .hero h1 .ln > span { transform: translateY(108%) rotate(3deg); transition: transform 1.15s var(--ease); transition-delay: var(--d, 0s); }
 .loaded .hero h1 .ln > span { transform: none; }
 @keyframes flow { from { background-position: 0% 0; } to { background-position: 100% 0; } }
@@ -130,18 +124,18 @@ header.scrolled .navbar { background: rgba(22,10,36,.72); border-color: var(--li
 .mock .bar .pro { margin-left: auto; padding: 3px 9px; border-radius: 99px; font-size: 9px; letter-spacing: .1em; color: #3b2300; background: linear-gradient(90deg, #fde68a, #f59e0b); }
 .mock .side { position: absolute; left: 0; top: 36px; bottom: 0; width: 54px; display: flex; flex-direction: column; gap: 13px; align-items: center; padding-top: 18px; background: rgba(0,0,0,.14); }
 .mock .side i { width: 24px; height: 24px; border-radius: 8px; background: rgba(255,255,255,.08); }
-.mock .side i:first-child { background: linear-gradient(135deg, var(--a), color-mix(in oklab, var(--a) 50%, #7c3aed)); box-shadow: 0 0 16px color-mix(in srgb, var(--a) 60%, transparent); }
+.mock .side i:first-child { background: var(--a); }
 .mock .main { position: absolute; left: 54px; right: 0; top: 36px; bottom: 0; padding: 22px; }
 .mock .t1 { font-weight: 700; font-size: clamp(18px, 2.1vw, 30px); letter-spacing: -.02em; line-height: 1.1; }
 .mock .t1 b { font-weight: 700; color: transparent; -webkit-text-stroke: 1.2px color-mix(in oklab, var(--a) 70%, white); }
 .mock .t2 { width: 50%; height: 7px; border-radius: 99px; background: rgba(255,255,255,.12); margin-top: 12px; }
 .mock .play { position: absolute; right: 22px; top: 22px; width: 34%; height: 46px; border-radius: 14px; display: grid; place-items: center; font-weight: 700; letter-spacing: .2em; font-size: 12.5px;
-  background: linear-gradient(90deg, var(--a), color-mix(in oklab, var(--a) 55%, #7c3aed)); box-shadow: 0 10px 30px -6px color-mix(in srgb, var(--a) 80%, transparent); animation: pulse 2.8s ease-in-out infinite; }
+  background: var(--a); color: #0a0a0a; animation: pulse 2.8s ease-in-out infinite; }
 @keyframes pulse { 50% { transform: scale(1.035); box-shadow: 0 10px 44px -2px color-mix(in srgb, var(--a) 95%, transparent); } }
 .mock .tiles { position: absolute; left: 22px; right: 22px; bottom: 22px; display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 10px; }
 .mock .tiles div { height: 92px; border-radius: 14px; position: relative; overflow: hidden; background: rgba(255,255,255,.05); box-shadow: inset 0 0 0 1px rgba(255,255,255,.07); }
 .mock .tiles div::before { content: ''; position: absolute; left: 10px; right: 10px; bottom: 10px; height: 18px; border-radius: 6px; background: linear-gradient(90deg, var(--c), transparent); }
-.mock .tiles div:nth-child(1) { --c: color-mix(in srgb, var(--a) 75%, transparent); } .mock .tiles div:nth-child(2) { --c: rgba(139,92,246,.75); } .mock .tiles div:nth-child(3) { --c: rgba(236,72,153,.6); }
+.mock .tiles div:nth-child(1) { --c: rgba(255,255,255,.4); } .mock .tiles div:nth-child(2) { --c: rgba(255,255,255,.26); } .mock .tiles div:nth-child(3) { --c: rgba(255,255,255,.18); }
 .mock .tiles div::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.14) 50%, transparent 70%); transform: translateX(-120%); animation: shine 4.5s ease-in-out infinite; }
 .mock .tiles div:nth-child(2)::after { animation-delay: .35s; } .mock .tiles div:nth-child(3)::after { animation-delay: .7s; }
 @keyframes shine { 0%, 55% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
@@ -430,7 +424,7 @@ header.scrolled .navbar, .tile, .num, .step, .faq details, .pro, .final, .cape, 
 <div class="progress" aria-hidden="true"></div>
 <header class="top"><div class="navbar">
   <a class="brand" href="#"><span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path transform="scale(.0625)" fill="currentColor" fill-rule="evenodd" d="M160 64H352A96 96 0 0 1 448 160V352A96 96 0 0 1 352 448H160A96 96 0 0 1 64 352V160A96 96 0 0 1 160 64ZM136 144H280V196H136ZM182 196H234V368H182ZM296 144H348V368H296ZM234 256H296V304H234Z"/></svg></span><span>THHO <i>CLIENT</i></span></a>
-  <nav class="navlinks" aria-label="Seiten"><a href="#features">Features</a><a href="#video">Video</a><a href="#capes">Capes</a><a href="#pro">Pro</a><a href="#faq">FAQ</a><a href="https://discord.gg/S2GWjhX2UF" target="_blank" rel="noopener">Discord</a></nav>
+  <nav class="navlinks" aria-label="Seiten"><a href="#features">Features</a><a href="#capes">Capes</a><a href="#pro">Pro</a><a href="#faq">FAQ</a><a href="https://discord.gg/S2GWjhX2UF" target="_blank" rel="noopener">Discord</a></nav>
   <a class="btn primary small navdl" href="#download"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Download<span class="v" id="navVer">1.11.13</span></a>
 </div></header>
 <a class="sitebanner" >Die Open Beta ist da!</a>
